@@ -1,5 +1,5 @@
-﻿Сборка начата 08.10.2014 19:42:23.
-     1>Проект "D:\dev\PS\C++\labs\lw1\src\lw1-01\lw1-01.vcxproj" в узле 2 (целевые объекты Rebuild).
+﻿Сборка начата 09.10.2014 23:37:53.
+     1>Проект "D:\dev\PS\C++\labs\lw1\src\lw1-01\lw1-01.vcxproj" в узле 2 (целевые объекты Build).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\lw1-01.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
          stdafx.cpp
@@ -9,8 +9,8 @@
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-01.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-01.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-01.lib" /MACHINE:X86 "Debug\lw1-01.obj"
          Debug\stdafx.obj
          lw1-01.vcxproj -> D:\dev\PS\C++\labs\lw1\src\Debug\lw1-01.exe
-     1>Сборка проекта "D:\dev\PS\C++\labs\lw1\src\lw1-01\lw1-01.vcxproj" завершена (целевые объекты Rebuild).
+     1>Сборка проекта "D:\dev\PS\C++\labs\lw1\src\lw1-01\lw1-01.vcxproj" завершена (целевые объекты Build).
 
 Сборка успешно завершена.
 
-Затраченное время: 00:00:00.53
+Затраченное время: 00:00:00.76
