@@ -1,0 +1,14 @@
+﻿Сборка начата 10.10.2014 4:50:14.
+     1>Проект "D:\dev\PS\C++\labs\lw1\src\lw1-04\lw1-04.vcxproj" в узле 2 (целевые объекты Build).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\lw1-04.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "lw1-04.cpp"
+         lw1-04.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-04.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-04.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\dev\PS\C++\labs\lw1\src\Debug\lw1-04.lib" /MACHINE:X86 "Debug\lw1-04.obj"
+         Debug\stdafx.obj
+         lw1-04.vcxproj -> D:\dev\PS\C++\labs\lw1\src\Debug\lw1-04.exe
+     1>Сборка проекта "D:\dev\PS\C++\labs\lw1\src\lw1-04\lw1-04.vcxproj" завершена (целевые объекты Build).
+
+Сборка успешно завершена.
+
+Затраченное время: 00:00:00.40
