@@ -1,4 +1,4 @@
-﻿Сборка начата 10.10.2014 3:24:50.
+﻿Сборка начата 13.10.2014 16:55:14.
      1>Проект "D:\dev\PS\C++\labs\lw1\src\lw1-03\lw1-03.vcxproj" в узле 2 (целевые объекты Build).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\lw1-03.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "lw1-03.cpp"
@@ -13,4 +13,4 @@
 
 Сборка успешно завершена.
 
-Затраченное время: 00:00:00.43
+Затраченное время: 00:00:00.42

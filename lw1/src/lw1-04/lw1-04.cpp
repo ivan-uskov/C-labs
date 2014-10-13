@@ -5,22 +5,22 @@ const double MIN_N = 2;
 const double FIRST_FIB_NUM = 0;
 const double SECOND_FIB_NUM = 1;
 
-const int ERROR_TO_BIG_INPUT_VALUE = 0;
+const int ERROR_TOO_BIG_INPUT_VALUE = 0;
 const int SUCCESS = 1;
 
 const int ELEMENTS_IN_ROW = 5;
 
-bool checkCanPrintSequence(const double n)
+bool CheckCanPrintSequence(const double n)
 {
     return (n > MIN_N && ((double)((int)n) == n));
 }
 
-bool checkCanAddup(double x, double y)
+bool CheckCanAddup(double x, double y)
 {
     return ( (DBL_MAX - x) > y );
 }
 
-int printSequence(const double n)
+int PrintSequence(const double n)
 {
     double untilLast = FIRST_FIB_NUM;
     double last = SECOND_FIB_NUM;
@@ -30,9 +30,9 @@ int printSequence(const double n)
 
     for (double i = MIN_N; i <= n; i++)
     {
-        if (!checkCanAddup(untilLast, last))
+        if (!CheckCanAddup(untilLast, last))
         {
-            return ERROR_TO_BIG_INPUT_VALUE;
+            return ERROR_TOO_BIG_INPUT_VALUE;
         }
 
         curr = untilLast + last;
@@ -61,11 +61,11 @@ int main(int argc, char* argv[])
 
     const double n = strtod(argv[1], NULL);
 
-    bool canPrintSequence = checkCanPrintSequence(n);
+    bool canPrintSequence = CheckCanPrintSequence(n);
     if (canPrintSequence)
     {
-        int code = printSequence(n);
-        if (code == ERROR_TO_BIG_INPUT_VALUE)
+        int code = PrintSequence(n);
+        if (code == ERROR_TOO_BIG_INPUT_VALUE)
         {
             printf("\nSorry, too big input max number\n");
         }

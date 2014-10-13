@@ -6,15 +6,21 @@ const char DIVISION = '/';
 const char MULTIPLICATION = '*';
 const int OPERATOR_SYMBOLS_LENGTH = 1;
 
-const int OPERANDS_CORRECT_CODE = 0;
-const int DIVISION_BY_ZERO_CODE = 1;
-
-const int PARSE_SUCCESS_CODE = 0;
-const int OPERATOR_EXPECTED_CODE = 1;
-const int NUMBER_EXPECTED_CODE = 2;
-const int EMPTY_ARGUMENTS_LIST_CODE = 3;
-
 typedef double (*EVAL_OPERATOR)(double, double);
+
+enum PARSE_STATUS
+{
+    ParseSuccess,
+    OperatorExpected,
+    NumberExpected,
+    EmptyArgumentsList
+};
+
+enum EVAL_STATUS
+{
+    OperadsCorrect,
+    DivisionByZero
+};
 
 enum PARSE_FLAG
 {
@@ -22,27 +28,27 @@ enum PARSE_FLAG
     Operator
 };
 
-double addup(double x, double y)
+double Addup(double x, double y)
 {
     return x + y;
 }
 
-double subtract(double x, double y)
+double Subtract(double x, double y)
 {
     return x - y;
 }
 
-double multiply(double x, double y)
+double Multiply(double x, double y)
 {
     return x * y;
 }
 
-double divide(double x, double y)
+double Divide(double x, double y)
 {
     return x / y;
 }
 
-EVAL_OPERATOR getOperatorFuncByChar(const char * str)
+EVAL_OPERATOR GetOperatorFuncByChar(const char * str)
 {
     EVAL_OPERATOR operatorFunc = NULL;
     if (strlen(str) == OPERATOR_SYMBOLS_LENGTH)
@@ -51,22 +57,22 @@ EVAL_OPERATOR getOperatorFuncByChar(const char * str)
         {
             case PLUS:
             {
-                operatorFunc = addup;
+                operatorFunc = Addup;
                 break;
             }
             case MINUS:
             {
-                operatorFunc = subtract;
+                operatorFunc = Subtract;
                 break;
             }
             case DIVISION:
             {
-                operatorFunc = divide;
+                operatorFunc = Divide;
                 break;
             }
             case MULTIPLICATION:
             {
-                operatorFunc = multiply;
+                operatorFunc = Multiply;
                 break;
             }
         }
@@ -93,89 +99,89 @@ double StringToDouble(const char * str, bool & err)
     return d1;
 }
 
-int checkOperationCorrect(double leftOperand, double rightOperand, EVAL_OPERATOR func)
+EVAL_STATUS CheckOperationCorrect(double leftOperand, double rightOperand, EVAL_OPERATOR func)
 {
-    int code = OPERANDS_CORRECT_CODE;
-    if (func == divide && rightOperand == 0)
+    EVAL_STATUS code = OperadsCorrect;
+    if (func == Divide && rightOperand == 0)
     {
-        code = DIVISION_BY_ZERO_CODE;
+        code = DivisionByZero;
     }
     return code;
 }
 
-void setDoubleNull(double ** x)
+void SetDoubleNull(double ** x)
 {
     delete *x;
     *x = NULL;
 }
 
-void moveRightToLeftOperand(double ** leftOperand, double ** rightOperand)
+void MoveRightToLeftOperand(double ** leftOperand, double ** rightOperand)
 {
     *leftOperand = new double;
     **leftOperand = **rightOperand;
-    setDoubleNull(rightOperand);
+    SetDoubleNull(rightOperand);
 }
 
-void switchParseFlag(PARSE_FLAG *flag)
+void SwitchParseFlag(PARSE_FLAG *flag)
 {
     *flag = (*flag == Number) ? Operator : Number;
 }
 
-void evalOnce(double ** leftOperand, double ** rightOperand, EVAL_OPERATOR * func)
+void EvalOnce(double ** leftOperand, double ** rightOperand, EVAL_OPERATOR * func)
 {
     **leftOperand = (*func)(**leftOperand, **rightOperand);
-    setDoubleNull(rightOperand);
+    SetDoubleNull(rightOperand);
     func = NULL;
 }
 
-int tryParseArgument(double ** rightOperand, EVAL_OPERATOR * func, char * arg, PARSE_FLAG parseItem)
+PARSE_STATUS TryParseArgument(double ** rightOperand, EVAL_OPERATOR * func, char * arg, PARSE_FLAG parseItem)
 {
-    int code = PARSE_SUCCESS_CODE;
+    PARSE_STATUS code = ParseSuccess;
     if (parseItem == Number)
     {
         bool err;
         *rightOperand = new double;
         **rightOperand = StringToDouble(arg, err);
-        code = (err) ? NUMBER_EXPECTED_CODE : code;
+        code = (err) ? NumberExpected : code;
     }
     else
     {
-        *func = getOperatorFuncByChar(arg);
-        code = (*func == NULL) ? OPERATOR_EXPECTED_CODE : code;
+        *func = GetOperatorFuncByChar(arg);
+        code = (*func == NULL) ? OperatorExpected : code;
     }
     return code;
 }
 
-int tryEvalExprassionOnce(double ** leftOperand, double ** rightOperand, EVAL_OPERATOR * func)
+EVAL_STATUS TryEvalExprassionOnce(double ** leftOperand, double ** rightOperand, EVAL_OPERATOR * func)
 {
-    int code = OPERANDS_CORRECT_CODE;
+    EVAL_STATUS status = OperadsCorrect;
     bool operandsExists = (*leftOperand != NULL && *rightOperand != NULL && func != NULL);
     if (operandsExists)
     {
-        code = checkOperationCorrect(**leftOperand, **rightOperand, *func);
-        if (code == OPERANDS_CORRECT_CODE)
+        status = CheckOperationCorrect(**leftOperand, **rightOperand, *func);
+        if (status == OperadsCorrect)
         {
-            evalOnce(leftOperand, rightOperand, func);
+            EvalOnce(leftOperand, rightOperand, func);
         }
     }
-    return code;
+    return status;
 }
 
-void printArgumentParseErrorCode(int code, char* arg, int argKey)
+void PrintArgumentParseErrorCode(PARSE_STATUS code, char* arg, int argKey)
 {
     switch (code)
     {
-        case OPERATOR_EXPECTED_CODE:
+        case OperatorExpected:
         {
             printf("\nParse Error : Unexpected parameter '%s' on position '%d', expected Operator\n", arg, argKey);
             break;
         }
-        case NUMBER_EXPECTED_CODE:
+        case NumberExpected:
         {
             printf("\nParse Error : Unexpected parameter '%s' on position '%d', expected Number\n", arg, argKey);
             break;
         }
-        case EMPTY_ARGUMENTS_LIST_CODE:
+        case EmptyArgumentsList:
         {
             printf("Program eval arithmetic expression of its command line arguments.\n");
             break;
@@ -183,11 +189,11 @@ void printArgumentParseErrorCode(int code, char* arg, int argKey)
     }
 }
 
-void printOperandsErrorCode(int code)
+void PrintOperandsErrorCode(EVAL_STATUS code)
 {
     switch (code)
     {
-        case DIVISION_BY_ZERO_CODE:
+        case DivisionByZero:
         {
             printf("\nEval Error: Division by zero!\n");
             break;
@@ -199,7 +205,7 @@ int main(int argc, char * argv[])
 {
     if (argc <= 1)
     {
-        printArgumentParseErrorCode(EMPTY_ARGUMENTS_LIST_CODE, argv[0], argc);
+        PrintArgumentParseErrorCode(EmptyArgumentsList, argv[0], argc);
         return 0;
     }
 
@@ -207,30 +213,38 @@ int main(int argc, char * argv[])
     EVAL_OPERATOR currEvalFunc = NULL;
     double *leftOperand = NULL; 
     double *rightOperand = NULL;
-    int code;
+    PARSE_STATUS parseStatus;
+    EVAL_STATUS evalStatus;
 
     for (int i = 1; i < argc; i++)
     {
         printf("%s ", argv[i]);
 
-        code = tryParseArgument(&rightOperand, &currEvalFunc, argv[i], currParseItem);
-        if (code != PARSE_SUCCESS_CODE)
+        bool isLastArgOperator = ( (currParseItem == Operator) && (argc - 1 == i) );
+        if (isLastArgOperator)
         {
-            printArgumentParseErrorCode(code, argv[i], i);
+            PrintArgumentParseErrorCode(NumberExpected, argv[i], i);
             return 1;
         }
 
-        code = tryEvalExprassionOnce(&leftOperand, &rightOperand, &currEvalFunc);
-        if (code != OPERANDS_CORRECT_CODE)
+        parseStatus = TryParseArgument(&rightOperand, &currEvalFunc, argv[i], currParseItem);
+        if (parseStatus != ParseSuccess)
         {
-            printOperandsErrorCode(code);
+            PrintArgumentParseErrorCode(parseStatus, argv[i], i);
             return 1;
         }
 
-        switchParseFlag(&currParseItem);
+        evalStatus = TryEvalExprassionOnce(&leftOperand, &rightOperand, &currEvalFunc);
+        if (evalStatus != OperadsCorrect)
+        {
+            PrintOperandsErrorCode(evalStatus);
+            return 1;
+        }
+
+        SwitchParseFlag(&currParseItem);
         if (leftOperand == NULL)
         {
-            moveRightToLeftOperand(&leftOperand, &rightOperand);
+            MoveRightToLeftOperand(&leftOperand, &rightOperand);
         }
     }
     printf("= %.3f", *leftOperand);

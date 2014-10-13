@@ -39,22 +39,24 @@ int StringToInt(const char * str, bool & err)
 
 int main(int argc, char* argv[])
 {
-    int upperBound;
+    int upperBound = DEFAULT_UPPER_BOUND;
     int userUpperBound = 0; //user can set by first command line parameter
-    bool errors;
 
     if (argc > 1)
     {
+        bool errors;
         userUpperBound = StringToInt(argv[1], errors);
-    }
+        
+        if (errors)
+        {
+            printf("Invalid argument!");
+            return 1;
+        }
 
-    if (userUpperBound > LOWER_BOUND && !errors)
-    {
-        upperBound = userUpperBound;
-    }
-    else
-    {
-        upperBound = DEFAULT_UPPER_BOUND;
+        if (userUpperBound > LOWER_BOUND)
+        {
+            upperBound = userUpperBound;
+        }
     }
 
     PrintSpecialNumbers(upperBound);

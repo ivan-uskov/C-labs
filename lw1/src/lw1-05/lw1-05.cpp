@@ -12,28 +12,28 @@ enum LOOP_STATE
 };
 
 
-double getRadByDegree(double degree)
+double GetRadByDegree(double degree)
 {
     return degree * PI / 180;
 }
 
-double calculateDistance(double speed, double alpha)
+double CalculateDistance(double speed, double alpha)
 {    
-    double coal = sin(getRadByDegree(2 * alpha));
-    return speed * speed * sin(getRadByDegree(2 * alpha)) / ACCELERATION_TO_GRAVITY;
+    double coal = sin(GetRadByDegree(2 * alpha));
+    return speed * speed * sin(GetRadByDegree(2 * alpha)) / ACCELERATION_TO_GRAVITY;
 }
 
-bool checkSpeed(double speed)
+bool CheckSpeed(double speed)
 {
     return speed > 0;
 }
 
-bool checkAlpha(double alpha)
+bool CheckAlpha(double alpha)
 {
     return (0 < alpha) && (alpha < 90);
 }
 
-LOOP_STATE initSpeed(double * speed)
+LOOP_STATE InitSpeed(double * speed)
 {
     std::string line;
     printf("Enter speed [m/s] (or type 'exit')> ");
@@ -45,7 +45,7 @@ LOOP_STATE initSpeed(double * speed)
 
     *speed = strtod(line.c_str(), NULL);
 
-    if (!checkSpeed(*speed))
+    if (!CheckSpeed(*speed))
     {
         printf("Invalid parameter\n");
         return Continue;
@@ -53,7 +53,7 @@ LOOP_STATE initSpeed(double * speed)
     return None;
 }
 
-LOOP_STATE initAlpha(double * alpha)
+LOOP_STATE InitAlpha(double * alpha)
 {
     std::string line;
     printf("Enter a0 [degree] (or type 'exit')> ");
@@ -64,7 +64,7 @@ LOOP_STATE initAlpha(double * alpha)
     }
 
     *alpha = strtod(line.c_str(), NULL);
-    if (!checkAlpha(*alpha))
+    if (!CheckAlpha(*alpha))
     {
         printf("Invalid parameter\n");
         return Continue;
@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
         LOOP_STATE state;
         double speed;
         double alpha;
-        
-        state = initSpeed(&speed);
+
+        state = InitSpeed(&speed);
         if (state == Break)
         {
             break;
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        state = initAlpha(&alpha);
+        state = InitAlpha(&alpha);
         if (state == Break)
         {
             break;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        printf("Distance is: %.3f\n", calculateDistance(speed, alpha));
+        printf("Distance is: %.3f\n", CalculateDistance(speed, alpha));
     }
 
     return 0;
