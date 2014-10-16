@@ -29,7 +29,7 @@ bool ReadDouble(double * num)
 {
     std::string inputString;
     std::getline(std::cin, inputString);
-    if (inputString.compare(EXIT_LINE) == 0)
+    if (inputString == EXIT_LINE)
     {
         return false;
     }
