@@ -1,16 +1,16 @@
-﻿Сборка начата 13.10.2014 17:13:40.
-     1>Проект "D:\dev\PS\C++\labs\lw1\src\lw1-05\lw1-05.vcxproj" в узле 2 (целевые объекты Build).
+﻿Build started 10/16/2014 4:11:48 PM.
+     1>Project "D:\PS\C++\labs\C-labs\lw1\src\lw1-05\lw1-05.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\lw1-05.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "lw1-05.cpp"
          lw1-05.cpp
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\dev\PS\C++\labs\lw1\src\Release\lw1-05.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\dev\PS\C++\labs\lw1\src\Release\lw1-05.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\dev\PS\C++\labs\lw1\src\Release\lw1-05.lib" /MACHINE:X86 /SAFESEH "Release\lw1-05.obj"
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\PS\C++\labs\C-labs\lw1\src\Release\lw1-05.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\PS\C++\labs\C-labs\lw1\src\Release\lw1-05.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\PS\C++\labs\C-labs\lw1\src\Release\lw1-05.lib" /MACHINE:X86 /SAFESEH "Release\lw1-05.obj"
          Release\stdafx.obj
-         Создание кода
-         Создание кода завершено
-         lw1-05.vcxproj -> D:\dev\PS\C++\labs\lw1\src\Release\lw1-05.exe
-     1>Сборка проекта "D:\dev\PS\C++\labs\lw1\src\lw1-05\lw1-05.vcxproj" завершена (целевые объекты Build).
+         Generating code
+         Finished generating code
+         lw1-05.vcxproj -> D:\PS\C++\labs\C-labs\lw1\src\Release\lw1-05.exe
+     1>Done Building Project "D:\PS\C++\labs\C-labs\lw1\src\lw1-05\lw1-05.vcxproj" (Build target(s)).
 
-Сборка успешно завершена.
+Build succeeded.
 
-Затраченное время: 00:00:01.14
+Time Elapsed 00:00:02.08

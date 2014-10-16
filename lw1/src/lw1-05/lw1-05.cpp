@@ -1,26 +1,18 @@
 #include "stdafx.h"
 
-const double ACCELERATION_TO_GRAVITY = 9.8; // ускорение свободного падения
+const double GRAVITY = 9.8;
 const double PI = 3.14159265358979323;
 const std::string EXIT_LINE = "exit";
 
-enum LOOP_STATE
-{
-    Break,
-    Continue,
-    None
-};
-
-
-double GetRadByDegree(double degree)
+double DegreeToRadians(double degree)
 {
     return degree * PI / 180;
 }
 
-double CalculateDistance(double speed, double alpha)
-{    
-    double coal = sin(GetRadByDegree(2 * alpha));
-    return speed * speed * sin(GetRadByDegree(2 * alpha)) / ACCELERATION_TO_GRAVITY;
+double CalculateDistance(double speed, double angle)
+{
+    double coal = sin(DegreeToRadians(2 * angle));
+    return speed * speed * sin(DegreeToRadians(2 * angle)) / GRAVITY;
 }
 
 bool CheckSpeed(double speed)
@@ -28,82 +20,86 @@ bool CheckSpeed(double speed)
     return speed > 0;
 }
 
-bool CheckAlpha(double alpha)
+bool CheckAngle(double angle)
 {
-    return (0 < alpha) && (alpha < 90);
+    return (0 < angle) && (angle < 90);
 }
 
-LOOP_STATE InitSpeed(double * speed)
+bool ReadDouble(double * num)
 {
-    std::string line;
-    printf("Enter speed [m/s] (or type 'exit')> ");
-    std::getline(std::cin, line);
-    if (line.compare(EXIT_LINE) == 0)
+    std::string inputString;
+    std::getline(std::cin, inputString);
+    if (inputString.compare(EXIT_LINE) == 0)
     {
-        return Break;
+        return false;
     }
-
-    *speed = strtod(line.c_str(), NULL);
-
-    if (!CheckSpeed(*speed))
-    {
-        printf("Invalid parameter\n");
-        return Continue;
-    }
-    return None;
+    *num = strtod(inputString.c_str(), NULL);
+    return true;
 }
 
-LOOP_STATE InitAlpha(double * alpha)
+bool ReadSpeed(double * speed)
 {
-    std::string line;
-    printf("Enter a0 [degree] (or type 'exit')> ");
-    std::getline(std::cin, line);
-    if (line.compare(EXIT_LINE) == 0)
+    bool isSpeedCorrect;
+    do 
     {
-        return Break;
-    }
+        printf("Enter speed [m/s] (or type 'exit')> ");
+        
+        if (!ReadDouble(speed))
+        {
+            return false;
+        }
 
-    *alpha = strtod(line.c_str(), NULL);
-    if (!CheckAlpha(*alpha))
-    {
-        printf("Invalid parameter\n");
-        return Continue;
+        isSpeedCorrect = CheckSpeed(*speed);
+        if (!isSpeedCorrect)
+        {
+            printf("Invalid parameter!\nUsage: [SPEED INTEGER > 0 [m/s]]\n");
+        }
     }
-    return None;
+    while (!isSpeedCorrect);
+    return true;
+}
+
+bool ReadAngle(double * angle)
+{
+    bool isAngleCorrect;
+    do
+    {
+        printf("Enter a0 [degree] (or type 'exit')> ");
+
+        if (!ReadDouble(angle))
+        {
+            return false;
+        }
+
+        isAngleCorrect = CheckAngle(*angle);
+        if (!isAngleCorrect)
+        {
+            printf("Invalid parameter!\nUsage: [Angle 0 < INTEGER < 90 [degree]]\n");
+        }
+    } while (!isAngleCorrect);
+    return true;
 }
 
 int main(int argc, char* argv[])
 {
     while (1)
     {
-        LOOP_STATE state;
         double speed;
-        double alpha;
+        double angle;
 
-        state = InitSpeed(&speed);
-        if (state == Break)
+        if (!ReadSpeed(&speed))
         {
-            break;
-        }
-        else if (state == Continue)
-        {
-            continue;
+            printf("Thinks for using as!\n");
+            return 1;
         }
 
-        state = InitAlpha(&alpha);
-        if (state == Break)
+        if (!ReadAngle(&angle))
         {
-            break;
-        }
-        else if (state == Continue)
-        {
-            continue;
+            printf("Thinks for using as!\n");
+            return 1;
         }
 
-        printf("Distance is: %.3f\n", CalculateDistance(speed, alpha));
+        printf("Distance is: %.3f\n", CalculateDistance(speed, angle));
     }
-
     return 0;
 }
-
-
