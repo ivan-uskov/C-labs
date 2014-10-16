@@ -1,78 +1,95 @@
 #include "stdafx.h"
-#include <cfloat>
+#include <climits>
 
-const double MIN_N = 2;
-const double FIRST_FIB_NUM = 0;
-const double SECOND_FIB_NUM = 1;
+typedef long int ArgumentType;
 
-const int ERROR_TOO_BIG_INPUT_VALUE = 0;
-const int SUCCESS = 1;
+const ArgumentType MIN_N = 2;
+const ArgumentType FIRST_FIB_NUM = 1;
+const ArgumentType SECOND_FIB_NUM = 1;
 
 const int ELEMENTS_IN_ROW = 5;
 
-bool CheckCanPrintSequence(const double n)
+bool CheckCanPrintSequence(ArgumentType n)
 {
-    return (n > MIN_N && ((double)((int)n) == n));
+    return (n > MIN_N && n <= INT_MAX); 
 }
 
-bool CheckCanAddup(double x, double y)
+bool CheckCanAddup(const ArgumentType maxVal, ArgumentType x, ArgumentType y)
 {
-    return ( (DBL_MAX - x) > y );
+    return ( (maxVal - x) >= y );
 }
 
-int PrintSequence(const double n)
+ArgumentType StringToInt(const char * str, bool & err)
 {
-    double untilLast = FIRST_FIB_NUM;
-    double last = SECOND_FIB_NUM;
-    double curr;
+    char * pLastChar = NULL;
+    ArgumentType param = strtol(str, &pLastChar, 10);
+    err = ((*str == '\0') || (*pLastChar != '\0'));
+    return param;
+}
 
-    int newLineCounter = ELEMENTS_IN_ROW;
+void PrintSequence(const ArgumentType n)
+{
+    ArgumentType untilLast = FIRST_FIB_NUM;
+    ArgumentType last = SECOND_FIB_NUM;
+    ArgumentType curr;
 
-    for (double i = MIN_N; i <= n; i++)
+    int newLineCounter = ELEMENTS_IN_ROW - 2;
+    printf("%15d, ", untilLast);
+    printf("%15d, ", last);
+    bool canAddup = CheckCanAddup(n, untilLast, last);
+
+    while (canAddup)
     {
-        if (!CheckCanAddup(untilLast, last))
-        {
-            return ERROR_TOO_BIG_INPUT_VALUE;
-        }
-
         curr = untilLast + last;
         untilLast = last;
         last = curr;
 
-        printf("%15.0f ", curr);
-        newLineCounter--;
+        printf("%15d", curr);
 
+        canAddup = CheckCanAddup(n, untilLast, last);
+        if (canAddup)
+        {
+            printf(", ");
+        }
+        else
+        {
+            printf("\n");
+        }
+
+        newLineCounter--;
         if (newLineCounter == 0)
         {
             newLineCounter = ELEMENTS_IN_ROW;
             printf("\n");
         }
     }
-    return SUCCESS;
 }
 
 int main(int argc, char* argv[])
 { 
     if (argc <= 1)
     {
-        printf("\nPlease enter max number - N >= 2\n");
+        printf("\nPlease enter max number: 2 <= N <= %d \n", INT_MAX);
         return 1;
     }
 
-    const double n = strtod(argv[1], NULL);
+    bool err;
+    const ArgumentType n = StringToInt(argv[1], err);
+
+    if (err)
+    {
+        printf("\nInvalid argument! \nUsage: [MAX_INTEGER_NUMBER]\n");
+        return 1;
+    }
 
     bool canPrintSequence = CheckCanPrintSequence(n);
     if (canPrintSequence)
     {
-        int code = PrintSequence(n);
-        if (code == ERROR_TOO_BIG_INPUT_VALUE)
-        {
-            printf("\nSorry, too big input max number\n");
-        }
+        PrintSequence(n);
     }
     else
     {
-        printf("\nInvalid argument, its sholud be natural number N >= 2\n");
+        printf("\nPlease enter max number: 2 <= N <= %d \n", INT_MAX);
         return 1;
     }
     printf("\n");
