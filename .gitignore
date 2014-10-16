@@ -1,0 +1,6 @@
+*.suo
+*.sdf
+*.pdb
+ipch
+Release
+Debug
