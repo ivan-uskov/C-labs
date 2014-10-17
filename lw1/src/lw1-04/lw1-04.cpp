@@ -3,7 +3,7 @@
 
 typedef long int ArgumentType;
 
-const ArgumentType MIN_N = 2;
+const ArgumentType MIN_N = 1;
 const ArgumentType FIRST_FIB_NUM = 1;
 const ArgumentType SECOND_FIB_NUM = 1;
 
@@ -11,7 +11,7 @@ const int ELEMENTS_IN_ROW = 5;
 
 bool CheckCanPrintSequence(ArgumentType n)
 {
-    return (n > MIN_N && n <= INT_MAX); 
+    return (n >= MIN_N && n <= INT_MAX); 
 }
 
 bool CheckCanAddup(const ArgumentType maxVal, ArgumentType x, ArgumentType y)
@@ -35,7 +35,15 @@ void PrintSequence(const ArgumentType n)
 
     int newLineCounter = ELEMENTS_IN_ROW - 2;
     printf("%15d, ", untilLast);
-    printf("%15d, ", last);
+    if (n == FIRST_FIB_NUM)
+    {
+        printf("%15d", last);
+    }
+    else
+    {
+        printf("%15d, ", last);
+    }
+    
     bool canAddup = CheckCanAddup(n, untilLast, last);
 
     while (canAddup)

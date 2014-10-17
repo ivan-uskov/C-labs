@@ -82,24 +82,14 @@ bool ReadAngle(double * angle)
 
 int main(int argc, char* argv[])
 {
-    while (1)
+    double speed;
+    double angle;
+
+    while (ReadSpeed(&speed) && ReadAngle(&angle))
     {
-        double speed;
-        double angle;
-
-        if (!ReadSpeed(&speed))
-        {
-            printf("Thinks for using as!\n");
-            return 1;
-        }
-
-        if (!ReadAngle(&angle))
-        {
-            printf("Thinks for using as!\n");
-            return 1;
-        }
-
         printf("Distance is: %.3f\n", CalculateDistance(speed, angle));
     }
+
+    printf("Thinks for using as!\n");
     return 0;
 }
