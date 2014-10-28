@@ -3,7 +3,7 @@
 const int PARAMS_COUNT = 2;
 const int FIRST_LINE_NIMBER = 1;
 
-bool printSubStrings(std::ifstream * input, char* string)
+bool PrintSubStrings(std::ifstream * input, char* string)
 {
     bool matchesFounded = false;
     int stringCount = FIRST_LINE_NIMBER;
@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
         return 1;
     }
     
-    bool stringsFounded = printSubStrings(&input, argv[2]);
+    bool stringsFounded = PrintSubStrings(&input, argv[2]);
     if (!stringsFounded)
     {
         std::cout << "Text not found\n";
