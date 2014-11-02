@@ -1,12 +1,26 @@
 ﻿#include "stdafx.h"
 
-const int PARAMS_COUNT = 3;
+using namespace std;
+
+enum class RootsQuantity
+{
+    Zero,
+    One,
+    Two
+};
 
 struct EquationArguments
 {
-    int a;
-    int b;
-    int c;
+    double a;
+    double b;
+    double c;
+};
+
+struct EquationRoots
+{
+    RootsQuantity count;
+    double first = NAN;
+    double second = NAN;
 };
 
 int StringToInt(const char * str, bool & err)
@@ -17,27 +31,38 @@ int StringToInt(const char * str, bool & err)
     return param;
 }
 
-bool СheckFirstArgument(int a)
+double StringToDouble(const char * str, bool & err)
+{
+    err = false;
+    double d1 = strtod(str, NULL);
+    if (fabs(d1) < DBL_EPSILON)
+    {
+        StringToInt(str, err);
+    }
+    return d1;
+}
+
+bool СheckFirstArgument(double a)
 {
     return a > 0;
 }
 
-bool InitEquationArgumentsFromArgv(char *argv[], EquationArguments *arguments)
+bool InitEquationArgumentsFromArgv(char *argv[], EquationArguments &arguments)
 {
     bool err;
-    arguments->a = StringToInt(argv[1], err);
-    if (err || !СheckFirstArgument(arguments->a))
-    {
-        return false;
-    }
-
-    arguments->b = StringToInt(argv[2], err);
+    arguments.a = StringToDouble(argv[1], err);
     if (err)
     {
         return false;
     }
 
-    arguments->c = StringToInt(argv[3], err);
+    arguments.b = StringToDouble(argv[2], err);
+    if (err)
+    {
+        return false;
+    }
+
+    arguments.c = StringToDouble(argv[3], err);
     if (err)
     {
         return false;
@@ -45,52 +70,77 @@ bool InitEquationArgumentsFromArgv(char *argv[], EquationArguments *arguments)
     return true;
 }
 
-void ProcessTwoRoots(EquationArguments *arguments, double descrimenant)
+void CalcTwoRoots(EquationArguments const& arguments, const double discriminant, EquationRoots & roots)
 {
-    double root1 = (-arguments->b + sqrt(descrimenant)) / 2 * arguments->a;
-    double root2 = (-arguments->b - sqrt(descrimenant)) / 2 * arguments->a;
-    printf("Root1: %.4f\n", root1);
-    printf("Root2: %.4f\n", root2);
+    roots.first = (-arguments.b + sqrt(discriminant)) / 2 * arguments.a;
+    roots.second = (-arguments.b - sqrt(discriminant)) / 2 * arguments.a;
+    
 }
 
-void ProcessOneRoot(EquationArguments *arguments)
+double CalcOneRoot(EquationArguments const& arguments)
 {
-    double root = - arguments->b / 2 * arguments->a;
-    printf("Root: %.4f\n", root);
+    return - arguments.b / (2 * arguments.a);
 }
 
-void ProcessZeroRoots()
+bool ResolveEquatiton(EquationArguments const& arguments, EquationRoots &roots)
 {
-    printf("There is no real root.\n");
-}
+    double discriminant = pow(arguments.b, 2) - 4 * arguments.a * arguments.c;
 
-void resolveEquatiton(EquationArguments *arguments)
-{
-    double descrimenant = pow(arguments->b, 2) - 4 * arguments->a * arguments->c;
-
-    if (descrimenant > 0)
+    if (!СheckFirstArgument(arguments.a))
     {
-        ProcessTwoRoots(arguments, descrimenant);
+        return false;
     }
-    else if (descrimenant == 0)
+
+    if (discriminant > 0)
     {
-        ProcessOneRoot(arguments);
+        roots.count = RootsQuantity::Two;
+        CalcTwoRoots(arguments, discriminant, roots);
+    }
+    else if (fabs(discriminant) < DBL_EPSILON)
+    {
+        roots.count = RootsQuantity::One;
+        roots.first = CalcOneRoot(arguments);
     }
     else
     {
-        ProcessZeroRoots();
+        roots.count = RootsQuantity::Zero;
+    }
+    return true;
+}
+
+void PrintEquationRoots(EquationRoots const& roots)
+{
+    switch (roots.count)
+    {
+        case RootsQuantity::Zero:
+        {
+            cout << "There is no real root.\n";
+            break;
+        }
+        case RootsQuantity::One:
+        {
+            cout << "Root: " << roots.first << "\n";
+            break;
+        }
+        case RootsQuantity::Two:
+        {
+            cout << "Root1: " << roots.first << "\n";
+            cout << "Root2: " << roots.second << "\n";
+            break;
+        }
     }
 }
 
 int main(int argc, char *argv[])
 {
+    const int PARAMS_COUNT = 3;
     if (argc <= PARAMS_COUNT)
     {
         printf("Expected arguments: [A] [B] [C]\n");
         return 1;
     }
 
-    EquationArguments *arguments = new EquationArguments;
+    EquationArguments arguments;
 
     if (!InitEquationArgumentsFromArgv(argv, arguments))
     {
@@ -98,7 +148,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    resolveEquatiton(arguments);
+    EquationRoots roots;
+    if (!ResolveEquatiton(arguments, roots))
+    {
+        cout << "Invalid parameters! Equation doesn't square!\n";
+        return 1;
+    }
+
+    PrintEquationRoots(roots);
 
     return 0;
 }

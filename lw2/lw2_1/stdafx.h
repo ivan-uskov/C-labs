@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <fstream>
+#include <vector>
 
 
 
