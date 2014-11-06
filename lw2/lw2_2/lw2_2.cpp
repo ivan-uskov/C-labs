@@ -72,14 +72,14 @@ bool InitEquationArgumentsFromArgv(char *argv[], EquationArguments &arguments)
 
 void CalcTwoRoots(EquationArguments const& arguments, const double discriminant, EquationRoots & roots)
 {
-    roots.first = (-arguments.b + sqrt(discriminant)) / 2 * arguments.a;
-    roots.second = (-arguments.b - sqrt(discriminant)) / 2 * arguments.a;
+    roots.first = (-arguments.b + sqrt(discriminant)) / (2 * arguments.a);
+    roots.second = (-arguments.b - sqrt(discriminant)) / (2 * arguments.a);
     
 }
 
-double CalcOneRoot(EquationArguments const& arguments)
+void CalcOneRoot(EquationArguments const& arguments, double & root)
 {
-    return - arguments.b / (2 * arguments.a);
+    root = (-1) * arguments.b / (2 * arguments.a);
 }
 
 bool ResolveEquatiton(EquationArguments const& arguments, EquationRoots &roots)
@@ -99,7 +99,7 @@ bool ResolveEquatiton(EquationArguments const& arguments, EquationRoots &roots)
     else if (fabs(discriminant) < DBL_EPSILON)
     {
         roots.count = RootsQuantity::One;
-        roots.first = CalcOneRoot(arguments);
+        CalcOneRoot(arguments, roots.first);
     }
     else
     {

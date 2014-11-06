@@ -1,15 +1,13 @@
 #include "stdafx.h"
 
 const int PARAMS_COUNT  = 2;
-const int MATRIX_MAX_ID = 2;
-const int MATRIX_LENGTH = MATRIX_MAX_ID + 1;
-const char *OUTPUT_FORMAT = "%.2f ";
+const int MATRIX_SIZE = 3;
 
-typedef float MatrixType[MATRIX_LENGTH][MATRIX_LENGTH];
-typedef float MatrixLineType[MATRIX_LENGTH];
+typedef double ValType;
+typedef ValType MatrixType[MATRIX_SIZE][MATRIX_SIZE];
+typedef ValType MatrixLineType[MATRIX_SIZE];
 
-MatrixType matrix1;
-MatrixType matrix2;
+using namespace std;
 
 enum class ReadMatrixErrorCode
 {
@@ -19,38 +17,42 @@ enum class ReadMatrixErrorCode
     LessParamsCount
 };
 
-bool InitMatrixLine(const char *sourseStr, MatrixLineType * line)
+bool ReadMatrixLineFromStr(string const& inputStr, MatrixLineType line, ReadMatrixErrorCode *errorCode)
 {
-    int result = std::sscanf(sourseStr, "%f\t%f\t%f", &(*line)[0], &(*line)[1], &(*line)[2]);
-    return (result == MATRIX_LENGTH);
+    istringstream iss(inputStr);
+    return static_cast<bool>( iss >> line[0] >> line[1] >> line[2] );
 }
 
-bool ReadMatrix(char *fileName, MatrixType *matrix, ReadMatrixErrorCode *errorCode)
+bool ReadMatrixFromStream(ifstream &input, MatrixType matrix, ReadMatrixErrorCode *errorCode)
 {
-    std::ifstream inputFile(fileName);
-    std::string buffStr;
+    string buffStr;
+    int stringCount = 0;
+    while ( !input.eof() && (stringCount < MATRIX_SIZE) )
+    {
+        getline(input, buffStr);
+        if (!ReadMatrixLineFromStr(buffStr, matrix[stringCount], errorCode))
+        {
+            *errorCode = ReadMatrixErrorCode::FileHasIncorrectFormat;
+            break;
+        }
+        ++stringCount;
+    }
+    return stringCount >= MATRIX_SIZE;
+}
+
+bool ReadMatrix(const char *fileName, MatrixType matrix, ReadMatrixErrorCode *errorCode)
+{
+    ifstream input(fileName);
+    string buffStr;
     int stringCount = 0;
 
-    if (inputFile.bad())
+    if (input.bad())
     {
         *errorCode = ReadMatrixErrorCode::FileNotExists;
         return false;
     }
-    
-    int result;
-    while (!inputFile.eof() && stringCount < MATRIX_LENGTH)
-    {
-        std::getline(inputFile, buffStr);
-        
-        if (!InitMatrixLine(buffStr.c_str(), &(*matrix)[stringCount]))
-        {
-            *errorCode = ReadMatrixErrorCode::FileHasIncorrectFormat;
-            return false;
-        }
-        
-        ++stringCount;
-    }
-    return stringCount > MATRIX_MAX_ID;
+
+    return ReadMatrixFromStream(input, matrix, errorCode);
 }
 
 void PrintReadMatrixError(ReadMatrixErrorCode code)
@@ -59,36 +61,36 @@ void PrintReadMatrixError(ReadMatrixErrorCode code)
     {
         case ReadMatrixErrorCode::FileNotExists:
         {
-            std::cout << "First input file doesn't exists!\n";
+            cout << "First input file doesn't exists!\n";
             break;
         }
         case ReadMatrixErrorCode::FileHasIncorrectFormat:
         {
-            std::cout << "Input file has incorrect format!\n";
+            cout << "Input file has incorrect format!\n";
             break;
         }
         case ReadMatrixErrorCode::LessParamsCount:
         {
-            std::cout << "Expected arguments: [Matrix 1 filename] [Matrix 2 filename]\n";
+            cout << "Expected arguments: [Matrix 1 filename] [Matrix 2 filename]\n";
             break;
         }
     }
 }
 
-void PrintMatrixMult(MatrixType *matrix1, MatrixType *matrix2)
+void PrintMatrixMult(const MatrixType matrix1, const MatrixType matrix2)
 {
-    for (int i = 0; i <= MATRIX_MAX_ID; ++i)
+    for (int row1 = 0; row1 < MATRIX_SIZE; ++row1)
     {
-        for (int j = 0; j <= MATRIX_MAX_ID; ++j)
+        for (int col = 0; col < MATRIX_SIZE; ++col)
         {
-            float sum = 0;
-            for (int k = 0; k <= MATRIX_MAX_ID; ++k)
+            ValType sum = 0;
+            for (int row2 = 0; row2 < MATRIX_SIZE; ++row2)
             {
-                sum += (*matrix1)[i][j] * (*matrix2)[k][j];
+                sum += matrix1[row1][col] * matrix2[row2][col];
             }
-            printf(OUTPUT_FORMAT, sum);
+            cout << sum << '\t';
         }
-        printf("\n");
+        cout << endl;
     }
 }
 
@@ -102,19 +104,21 @@ int main(int argc, char *argv[])
 
     ReadMatrixErrorCode errorCode;
 
-    if (!ReadMatrix(argv[1], &matrix1, &errorCode))
+    MatrixType matrix1;
+    if (!ReadMatrix(argv[1], matrix1, &errorCode))
     {
         PrintReadMatrixError(errorCode);
         return 1;
     }
 
-    if (!ReadMatrix(argv[2], &matrix2, &errorCode))
+    MatrixType matrix2;
+    if (!ReadMatrix(argv[2], matrix2, &errorCode))
     {
         PrintReadMatrixError(errorCode);
         return 1;
     }
 
-    PrintMatrixMult(&matrix1, &matrix2);
+    PrintMatrixMult(matrix1, matrix2);
 
     return 0;
 }

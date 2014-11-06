@@ -20,11 +20,11 @@ vector<int> FindStreamSubStrings(ifstream & input, string const& search)
     return results;
 }
 
-void PrintSubStrings(vector<int> subStrings)
+void PrintSubStrings(vector<int> const subStrings)
 {
     if (!subStrings.empty())
     {
-        for (vector<int>::const_iterator it = subStrings.cbegin(); it != subStrings.cend(); ++it)
+        for (auto it = subStrings.cbegin(); it != subStrings.cend(); ++it)
         {
             cout << *it << '\n';
         }
@@ -53,8 +53,8 @@ int main(int argc, char * argv[])
     }
 
     string subString(argv[2]);
-    vector<int> found = FindStreamSubStrings(input, subString);
-    PrintSubStrings(found);
+    vector<int> foundRowsNumbers = FindStreamSubStrings(input, subString);
+    PrintSubStrings(foundRowsNumbers);
 
     return 0;
 }
