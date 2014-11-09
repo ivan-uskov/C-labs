@@ -42,9 +42,9 @@ double StringToDouble(const char * str, bool & err)
     return d1;
 }
 
-bool СheckFirstArgument(double a)
+bool IsQuadraticEquation(EquationArguments const& arguments)
 {
-    return a > 0;
+    return !(fabs(arguments.a) < DBL_EPSILON);
 }
 
 bool InitEquationArgumentsFromArgv(char *argv[], EquationArguments &arguments)
@@ -86,7 +86,7 @@ bool ResolveEquatiton(EquationArguments const& arguments, EquationRoots &roots)
 {
     double discriminant = pow(arguments.b, 2) - 4 * arguments.a * arguments.c;
 
-    if (!СheckFirstArgument(arguments.a))
+    if (!IsQuadraticEquation(arguments))
     {
         return false;
     }

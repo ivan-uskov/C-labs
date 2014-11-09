@@ -18,6 +18,10 @@ solve.exe 1 0 > ./output.txt
 FC /B output.txt ./answers/answer4.txt
 IF ERRORLEVEL 1 GOTO err
 
+REM Start test 5
+solve.exe -1 0 1 > ./output.txt
+FC /B output.txt ./answers/answer5.txt
+IF ERRORLEVEL 1 GOTO err
 
 ECHO Program testing succeeded :-)
 del output.txt

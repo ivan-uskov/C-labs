@@ -77,7 +77,7 @@ void PrintReadMatrixError(ReadMatrixErrorCode code)
     }
 }
 
-void PrintMatrixMult(const MatrixType matrix1, const MatrixType matrix2)
+void MultMatrix(const MatrixType matrix1, const MatrixType matrix2, MatrixType matrixMult)
 {
     for (int row1 = 0; row1 < MATRIX_SIZE; ++row1)
     {
@@ -88,7 +88,18 @@ void PrintMatrixMult(const MatrixType matrix1, const MatrixType matrix2)
             {
                 sum += matrix1[row1][col] * matrix2[row2][col];
             }
-            cout << sum << '\t';
+            matrixMult[row1][col] = sum;
+        }
+    }
+}
+
+void PrintMatrix(const MatrixType matrix)
+{
+    for (int row = 0; row < MATRIX_SIZE; ++row)
+    {
+        for (int col = 0; col < MATRIX_SIZE; ++col)
+        {
+            cout << matrix[row][col] << "\t";
         }
         cout << endl;
     }
@@ -118,7 +129,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    PrintMatrixMult(matrix1, matrix2);
+    MatrixType matrixMult;
+
+    MultMatrix(matrix1, matrix2, matrixMult);
+    PrintMatrix(matrixMult);
 
     return 0;
 }

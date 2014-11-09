@@ -2,9 +2,8 @@
 
 using namespace std;
 
-vector<int> FindStreamSubStrings(ifstream & input, string const& search)
+bool FindStreamSubStrings(ifstream & input, string const& search, vector<int> & foundRowsNumbers)
 {
-    vector<int> results;
     string currStr;
     int currRow = 1;
 
@@ -13,25 +12,18 @@ vector<int> FindStreamSubStrings(ifstream & input, string const& search)
         getline(input, currStr);
         if (currStr.find(search) != string::npos)
         {
-            results.push_back(currRow);
+            foundRowsNumbers.push_back(currRow);
         }
         ++currRow;
     }
-    return results;
+    return !foundRowsNumbers.empty();
 }
 
-void PrintSubStrings(vector<int> const subStrings)
+void PrintNumbers(vector<int> const& numbers)
 {
-    if (!subStrings.empty())
+    for (auto const& item : numbers)
     {
-        for (auto it = subStrings.cbegin(); it != subStrings.cend(); ++it)
-        {
-            cout << *it << '\n';
-        }
-    }
-    else
-    {
-        cout << "Text not found\n";
+        cout << item << '\n';
     }
 }
 
@@ -53,8 +45,16 @@ int main(int argc, char * argv[])
     }
 
     string subString(argv[2]);
-    vector<int> foundRowsNumbers = FindStreamSubStrings(input, subString);
-    PrintSubStrings(foundRowsNumbers);
+    vector<int> foundRowsNumbers;
+
+    if (FindStreamSubStrings(input, subString, foundRowsNumbers))
+    {
+        PrintNumbers(foundRowsNumbers);
+    }
+    else
+    {
+        cout << "Text not found\n";
+    }
 
     return 0;
 }

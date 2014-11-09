@@ -92,7 +92,7 @@ bool AddLabyrinthLine(string const& sourse, LabyrinthType & labyrinth)
 {
     vector<char> newLine;
     PointType ** borderPoint;
-    for (auto it = sourse.begin(); it < sourse.end(); ++it)
+    for (auto it = sourse.begin(); it != sourse.end(); ++it)
     {
         newLine.push_back(*it);
         borderPoint = GetBorderPointBySym(*it, labyrinth);
@@ -133,27 +133,34 @@ bool ReadLabyrinth(ifstream & input, LabyrinthType & labyrinth, ErrorCodeType & 
     return true;
 }
 
+bool CheckFreeCell(PointType point, vector<vector<char>> const* workField)
+{
+    return ((*workField).size() > point.y) && (point.y > 0) && 
+           ((*workField).at(point.y).size() > point.x) && (point.x >= 0) && 
+           (*workField)[point.y][point.x] == FREE_SPACE_VAL;
+}
+
 void FindFreeCells(PointType const& point, vector<vector<char>> * workField, vector<PointType> & wave2)
 {
-    if ((*workField)[point.y + 1][point.x + 1] == FREE_SPACE_VAL)
+    if (CheckFreeCell({point.y + 1, point.x + 1}, workField))
     {
         (*workField)[point.y + 1][point.x + 1] = (*workField)[point.y][point.x] + 1;
         wave2.push_back({ point.y + 1, point.x + 1 });
     }
 
-    if ((*workField)[point.y - 1][point.x - 1] == FREE_SPACE_VAL)
+    if (CheckFreeCell({ point.y - 1, point.x - 1 }, workField))
     {
         (*workField)[point.y - 1][point.x - 1] = (*workField)[point.y][point.x] + 1;
         wave2.push_back({ point.y - 1, point.x - 1 });
     }
 
-    if ((*workField)[point.y + 1][point.x - 1] == FREE_SPACE_VAL)
+    if (CheckFreeCell({ point.y + 1, point.x - 1 }, workField))
     {
         (*workField)[point.y + 1][point.x - 1] = (*workField)[point.y][point.x] + 1;
         wave2.push_back({ point.y + 1, point.x - 1 });
     }
 
-    if ((*workField)[point.y - 1][point.x + 1] == FREE_SPACE_VAL)
+    if (CheckFreeCell({ point.y - 1, point.x + 1 }, workField))
     {
         (*workField)[point.y - 1][point.x + 1] = (*workField)[point.y][point.x] + 1;
         wave2.push_back({ point.y - 1, point.x + 1 });
@@ -172,7 +179,26 @@ vector<PointType> * SelectWay(vector<vector<char>> const* workField, WayBorderTy
             ++currPoint.x;
             ++currPoint.y;
         }
+
+        if ((*workField)[currPoint.x - 1][currPoint.y - 1] - currVal == 1)
+        {
+            --currPoint.x;
+            --currPoint.y;
+        }
+
+        if ((*workField)[currPoint.x + 1][currPoint.y - 1] - currVal == 1)
+        {
+            ++currPoint.x;
+            --currPoint.y;
+        }
+
+        if ((*workField)[currPoint.x - 1][currPoint.y + 1] - currVal == 1)
+        {
+            --currPoint.x;
+            ++currPoint.y;
+        }
     }
+    return way;
 }
 
 vector<PointType> * FindWay(vector<vector<char>> * workField, WayBorderType const& borderPoints)
@@ -183,21 +209,21 @@ vector<PointType> * FindWay(vector<vector<char>> * workField, WayBorderType cons
     while (wave1.size() > 0)
     {
         PointType point;
-        for (auto it = wave1.rbegin(); it != wave1.rend(); ++it)
+        for (auto it = wave1.begin(); it != wave1.end(); ++it)
         {
             point = *it;
             FindFreeCells(point, workField, wave2);
-            wave1.pop_back();
         }
+        wave1.clear();
         for (auto it = wave2.rbegin(); it != wave2.rend(); ++it)
         {
             if ((it->y == borderPoints.end->y) && (it->x == borderPoints.end->x))
             {
-                return SelectWay();
+                return SelectWay(workField, borderPoints);
             }
             wave1.push_back(*it);
-            wave2.pop_back();
         }
+        wave2.clear();
     }
     return NULL;
 }
@@ -205,9 +231,11 @@ vector<PointType> * FindWay(vector<vector<char>> * workField, WayBorderType cons
 vector<vector<char>>* CreateWorkField(vector<vector<char>> & field)
 {
     vector<vector<char>>* workField = new vector<vector<char>>;
-    for (auto itY = field.begin(); itY < field.end(); ++itY)
+    for (auto itY = field.begin(); itY != field.end(); ++itY)
     {
-        for (auto itX = (*itY).begin(); itX < (*itY).end(); ++itX)
+        vector<char> newVec;
+        
+        for (auto itX = (*itY).begin(); itX != (*itY).end(); ++itX)
         {
             char newVal = FREE_SPACE_CHAR;
 
@@ -220,8 +248,10 @@ vector<vector<char>>* CreateWorkField(vector<vector<char>> & field)
             {
                 newVal = START_POINT_VAL;
             }
-            (*workField)[itY - field.begin()][itX - (*itY).begin()] = newVal;
+
+            newVec.push_back(newVal);
         }
+        (*workField).push_back(newVec);
     }
     return workField;
 }
@@ -236,7 +266,7 @@ bool AddWay(LabyrinthType & labyrinth)
         return false;
     }
 
-    for (auto it = (*way).begin(); it < (*way).end(); ++it)
+    for (auto it = (*way).begin(); it != (*way).end(); ++it)
     {
         labyrinth.field[(*it).y][(*it).x] = WAY_ELT_CHAR;
     }
@@ -246,9 +276,9 @@ bool AddWay(LabyrinthType & labyrinth)
 
 void PrintLabyrinth(ofstream & output, LabyrinthType const& labyrinth)
 {
-    for (auto itY = labyrinth.field.begin(); itY < labyrinth.field.end(); ++itY)
+    for (auto itY = labyrinth.field.begin(); itY != labyrinth.field.end(); ++itY)
     {
-        for (auto itX = (*itY).begin(); itX < (*itY).end(); ++itX)
+        for (auto itX = (*itY).begin(); itX != (*itY).end(); ++itX)
         {
             output << *itX;
         }
