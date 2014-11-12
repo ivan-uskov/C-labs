@@ -14,7 +14,7 @@ enum class ErrorCodeType
     PackedFileDamaged
 };
 
-struct Symbol
+struct RLEChunk
 {
     unsigned char count;
     char val;
@@ -27,24 +27,25 @@ void ReadCharBinary(ifstream & input, char * ch)
     input.read(ch, sizeof(*ch));
 }
 
-void PrintSymbolPacked(ofstream &output, Symbol const& symbol)
+void WriteChunk(ofstream &output, RLEChunk const& chunk)
 {
-    output.write(reinterpret_cast<const char*>(&symbol.count), sizeof(char));
-    output.write(&symbol.val, sizeof(char));
+    output.write(reinterpret_cast<const char*>(&chunk), sizeof(chunk));
 }
 
-void PrintSymbolUnpacked(ofstream &output, Symbol const& symbol)
+void ExpandChunk(ofstream &output, RLEChunk const& symbol)
 {
     for (int i = 0; i < symbol.count; ++i)
     {
-        output.write(&symbol.val, sizeof(char));
+        output.put(symbol.val);
     }
 }
 
-void ReadSymbolPacked(ifstream &input, Symbol &symbol)
+RLEChunk ReadChunk(ifstream &input)
 {
-    ReadCharBinary(input, reinterpret_cast<char*>(&symbol.count));
-    ReadCharBinary(input, &symbol.val);
+    RLEChunk chunk;
+    ReadCharBinary(input, reinterpret_cast<char*>(&chunk.count));
+    ReadCharBinary(input, &chunk.val);
+    return chunk;
 }
 
 streamoff GetFileSize(ifstream & input)
@@ -61,7 +62,7 @@ bool CanUnpack(ifstream & input)
     return (GetFileSize(input) % 2 == 0);
 }
 
-void ReadSymbolUpacked(ifstream& input, Symbol & symbol)
+void ReadSymbolUpacked(ifstream& input, RLEChunk & symbol)
 {
     ReadCharBinary(input, &symbol.val);
     symbol.count = 1;
@@ -74,11 +75,11 @@ void ReadSymbolUpacked(ifstream& input, Symbol & symbol)
 
 bool Pack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
 {
-    Symbol currSym;
+    RLEChunk currSym;
     while (!input.eof())
     {
         ReadSymbolUpacked(input, currSym);
-        PrintSymbolPacked(output, currSym);
+        WriteChunk(output, currSym);
     }
     return true;
 }
@@ -91,11 +92,11 @@ bool Unpack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
         return false;
     }
 
-    Symbol currSym;
+    RLEChunk currSym;
     while (input.peek() != EOF)
     {
-        ReadSymbolPacked(input, currSym);
-        PrintSymbolUnpacked(output, currSym);
+        currSym = ReadChunk(input);
+        ExpandChunk(output, currSym);
     }
     return true;
 }
