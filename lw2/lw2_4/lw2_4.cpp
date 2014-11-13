@@ -20,12 +20,7 @@ struct RLEChunk
     char val;
 };
 
-typedef bool(*RleCompressorPtrType)(ifstream&, ofstream&, ErrorCodeType&);
-
-void ReadCharBinary(ifstream & input, char * ch)
-{
-    input.read(ch, sizeof(*ch));
-}
+typedef bool(*RleProcessor)(ifstream&, ofstream&, ErrorCodeType&);
 
 void WriteChunk(ofstream &output, RLEChunk const& chunk)
 {
@@ -43,8 +38,7 @@ void ExpandChunk(ofstream &output, RLEChunk const& symbol)
 RLEChunk ReadChunk(ifstream &input)
 {
     RLEChunk chunk;
-    ReadCharBinary(input, reinterpret_cast<char*>(&chunk.count));
-    ReadCharBinary(input, &chunk.val);
+    input.read(reinterpret_cast<char*>(&chunk), sizeof(chunk));
     return chunk;
 }
 
@@ -62,24 +56,24 @@ bool CanUnpack(ifstream & input)
     return (GetFileSize(input) % 2 == 0);
 }
 
-void ReadSymbolUpacked(ifstream& input, RLEChunk & symbol)
+void ReadCharSequence(ifstream& input, RLEChunk & symbol)
 {
-    ReadCharBinary(input, &symbol.val);
+    symbol.val = input.get();
     symbol.count = 1;
     while (!input.eof() && (symbol.val == input.peek()) && (symbol.count < UCHAR_MAX))
     {
-        ReadCharBinary(input, &symbol.val);
+        symbol.val = input.get();
         ++symbol.count;
     }
 }
 
 bool Pack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
 {
-    RLEChunk currSym;
+    RLEChunk chunk;
     while (!input.eof())
     {
-        ReadSymbolUpacked(input, currSym);
-        WriteChunk(output, currSym);
+        ReadCharSequence(input, chunk);
+        WriteChunk(output, chunk);
     }
     return true;
 }
@@ -101,9 +95,9 @@ bool Unpack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
     return true;
 }
 
-RleCompressorPtrType GetProgramByMode(const char* str)
+RleProcessor GetProgramByMode(const char* str)
 {
-    RleCompressorPtrType funcPtr = NULL;
+    RleProcessor funcPtr = NULL;
     if (strcmp(str, PACK_ARGUMENT) == 0)
     {
         funcPtr = Pack;
@@ -150,8 +144,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    RleCompressorPtrType compressor = GetProgramByMode(argv[1]);
-    if (!compressor)
+    RleProcessor processor = GetProgramByMode(argv[1]);
+    if (!processor)
     {
         PrintErrorByCode(ErrorCodeType::ParsingModeParameter);
         return 1;
@@ -166,7 +160,7 @@ int main(int argc, char* argv[])
     }
 
     ErrorCodeType errorCode;
-    if ( !(*compressor)(input, output, errorCode) )
+    if (!(*processor)(input, output, errorCode))
     {
         PrintErrorByCode(errorCode);
         return 1;
