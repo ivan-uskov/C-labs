@@ -20,26 +20,37 @@ struct RLEChunk
     char val;
 };
 
-typedef bool(*RleProcessor)(ifstream&, ofstream&, ErrorCodeType&);
-
-void WriteChunk(ofstream &output, RLEChunk const& chunk)
-{
-    output.write(reinterpret_cast<const char*>(&chunk), sizeof(chunk));
-}
-
-void ExpandChunk(ofstream &output, RLEChunk const& symbol)
-{
-    for (int i = 0; i < symbol.count; ++i)
-    {
-        output.put(symbol.val);
-    }
-}
+typedef bool(*RLEProcessor)(ifstream&, ofstream&, ErrorCodeType&);
 
 RLEChunk ReadChunk(ifstream &input)
 {
     RLEChunk chunk;
     input.read(reinterpret_cast<char*>(&chunk), sizeof(chunk));
     return chunk;
+}
+
+void ReadCharSequence(ifstream& input, RLEChunk & chunk)
+{
+    chunk.val = input.get();
+    chunk.count = 1;
+    while (!input.eof() && (chunk.val == input.peek()) && (chunk.count < UCHAR_MAX))
+    {
+        chunk.val = input.get();
+        ++chunk.count;
+    }
+}
+
+void WriteChunk(ofstream &output, RLEChunk const& chunk)
+{
+    output.write(reinterpret_cast<const char*>(&chunk), sizeof(chunk));
+}
+
+void ExpandChunk(ofstream &output, RLEChunk const& chunk)
+{
+    for (int i = 0; i < chunk.count; ++i)
+    {
+        output.put(chunk.val);
+    }
 }
 
 streamoff GetFileSize(ifstream & input)
@@ -54,17 +65,6 @@ streamoff GetFileSize(ifstream & input)
 bool CanUnpack(ifstream & input)
 {
     return (GetFileSize(input) % 2 == 0);
-}
-
-void ReadCharSequence(ifstream& input, RLEChunk & symbol)
-{
-    symbol.val = input.get();
-    symbol.count = 1;
-    while (!input.eof() && (symbol.val == input.peek()) && (symbol.count < UCHAR_MAX))
-    {
-        symbol.val = input.get();
-        ++symbol.count;
-    }
 }
 
 bool Pack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
@@ -86,18 +86,18 @@ bool Unpack(ifstream& input, ofstream& output, ErrorCodeType &errorCode)
         return false;
     }
 
-    RLEChunk currSym;
+    RLEChunk chunk;
     while (input.peek() != EOF)
     {
-        currSym = ReadChunk(input);
-        ExpandChunk(output, currSym);
+        chunk = ReadChunk(input);
+        ExpandChunk(output, chunk);
     }
     return true;
 }
 
-RleProcessor GetProgramByMode(const char* str)
+RLEProcessor GetProgramByMode(const char* str)
 {
-    RleProcessor funcPtr = NULL;
+    RLEProcessor funcPtr = nullptr;
     if (strcmp(str, PACK_ARGUMENT) == 0)
     {
         funcPtr = Pack;
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    RleProcessor processor = GetProgramByMode(argv[1]);
+    RLEProcessor processor = GetProgramByMode(argv[1]);
     if (!processor)
     {
         PrintErrorByCode(ErrorCodeType::ParsingModeParameter);
