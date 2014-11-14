@@ -5,6 +5,7 @@ using namespace std;
 const int PARAMS_COUNT = 5;
 const char* CRYPT_ARGUMENT = "crypt";
 const char* DECRYPT_ARGUMENT = "decrypt";
+const int BIT_MASK[CHAR_BIT] = { 2, 3, 4, 6, 7, 0, 1, 5 };
 
 
 enum class ErrorCodeType
@@ -24,10 +25,9 @@ enum class BitOrderType
 struct CryptorConfig
 {
     unsigned char key;
-    int * bitMask;
 };
 
-typedef void(*CryptFuncPtrType)(char&, CryptorConfig const &);
+typedef void(*CryptFuncPtrType)(char&, const unsigned char);
 
 char GetBits(char x, int p, int n)
 {
@@ -51,36 +51,36 @@ void PrintCharBinary(ofstream & output, char ch)
     output.write(&ch, sizeof(ch));
 }
 
-char ShuffleBits(const char ch, const int bitMask[])
+char ShuffleBits(const char ch)
 {
     char modifiedCh = 0;
     for (int i = 0; i < CHAR_BIT; ++i)
     {
-        modifiedCh |= GetBits(ch, i, 1) << bitMask[i];
+        modifiedCh |= GetBits(ch, i, 1) << BIT_MASK[i];
     }
     return modifiedCh;
 }
 
-char ResetBits(const char ch, const int bitMask[])
+char ResetBits(const char ch)
 {
     char modifiedCh = 0;
     for (int i = 0; i < CHAR_BIT; ++i)
     {
-        modifiedCh |= GetBits(ch, bitMask[i], 1) << i;
+        modifiedCh |= GetBits(ch, BIT_MASK[i], 1) << i;
     }
     return modifiedCh;
 }
 
-void Crypt(char & ch, CryptorConfig const& config)
+void Crypt(char & ch, const unsigned char key)
 {
-    ch ^= config.key;
-    ch = ShuffleBits(ch, config.bitMask);
+    ch ^= key;
+    ch = ShuffleBits(ch);
 }
 
-void Decrypt(char & ch, CryptorConfig const& config)
+void Decrypt(char & ch, const unsigned char key)
 {
-    ch = ResetBits(ch, config.bitMask);
-    ch ^= config.key;
+    ch = ResetBits(ch);
+    ch ^= key;
 }
 
 CryptFuncPtrType GetCryptFuncByMode(const char* str)
@@ -124,13 +124,13 @@ void PrintErrorByCode(const ErrorCodeType errorCode)
     }
 }
 
-void ProcessCrypting(ifstream & input, ofstream & output, CryptorConfig const& config, CryptFuncPtrType cryptor)
+void ProcessCrypting(ifstream & input, ofstream & output, const unsigned char key, CryptFuncPtrType cryptor)
 {
     char ch;
     while (input.peek() != EOF)
     {
         ReadCharBinary(input, &ch);
-        (*cryptor)(ch, config);
+        (*cryptor)(ch, key);
         PrintCharBinary(output, ch);
     }
 }
@@ -150,10 +150,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    int BIT_MASK[CHAR_BIT] = { 2, 3, 4, 6, 7, 0, 1, 5 };
-    CryptorConfig config;
-    config.bitMask = BIT_MASK;
-    if (!ParseKey(argv[4], &config.key))
+    unsigned char key;
+    if (!ParseKey(argv[4], &key))
     {
         PrintErrorByCode(ErrorCodeType::ParsingKeyParameter);
         return 1;
@@ -167,7 +165,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    ProcessCrypting(input, output, config, cryptor);
+    ProcessCrypting(input, output, key, cryptor);
 
     input.close();
     output.close();
