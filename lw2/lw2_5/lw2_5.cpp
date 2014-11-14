@@ -22,16 +22,11 @@ enum class BitOrderType
     Revers
 };
 
-struct CryptorConfig
-{
-    unsigned char key;
-};
-
 typedef void(*CryptFuncPtrType)(char&, const unsigned char);
 
-char GetBits(char x, int p, int n)
+char GetBit(char x, int p)
 {
-    return (x >> (p + 1 - n)) & ~(~0 << n);
+    return (x >> p) & 1;
 }
 
 bool ParseKey(char * keyStr, unsigned char * keyNum)
@@ -51,22 +46,22 @@ void PrintCharBinary(ofstream & output, char ch)
     output.write(&ch, sizeof(ch));
 }
 
-char ShuffleBits(const char ch)
+char EncodeBits(const char ch)
 {
     char modifiedCh = 0;
     for (int i = 0; i < CHAR_BIT; ++i)
     {
-        modifiedCh |= GetBits(ch, i, 1) << BIT_MASK[i];
+        modifiedCh |= GetBit(ch, i) << BIT_MASK[i];
     }
     return modifiedCh;
 }
 
-char ResetBits(const char ch)
+char DecodeBits(const char ch)
 {
     char modifiedCh = 0;
     for (int i = 0; i < CHAR_BIT; ++i)
     {
-        modifiedCh |= GetBits(ch, BIT_MASK[i], 1) << i;
+        modifiedCh |= GetBit(ch, BIT_MASK[i]) << i;
     }
     return modifiedCh;
 }
@@ -74,12 +69,12 @@ char ResetBits(const char ch)
 void Crypt(char & ch, const unsigned char key)
 {
     ch ^= key;
-    ch = ShuffleBits(ch);
+    ch = EncodeBits(ch);
 }
 
 void Decrypt(char & ch, const unsigned char key)
 {
-    ch = ResetBits(ch);
+    ch = DecodeBits(ch);
     ch ^= key;
 }
 
