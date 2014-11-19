@@ -22,7 +22,7 @@ struct PointType
 struct WayBorderType
 {
     PointType * start = nullptr;
-    PointType * end = nullptr;
+    PointType * end   = nullptr;
 };
 
 struct LabyrinthType
