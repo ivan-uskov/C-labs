@@ -15,9 +15,19 @@ public:
     {
         unsigned x, y;
     };
+    typedef struct WayBorder
+    {
+        Point * start;
+        Point * end;
+    };
+
+    typedef vector<vector<char>> Field;
 
     CMazeIO(const char * inputFileName, const char * outputFileName);
     ~CMazeIO();
+
+    CMazeIO::Field CMazeIO::ReadMaze(std::ifstream & input);
+    bool IsError()const;
 
 private:
 
@@ -36,7 +46,8 @@ private:
     };
 
     Errors m_Error = Errors::None;
-    Point m_StartPoint, m_EndPoint;
+    WayBorder m_WayBorder;
+    Field m_Field;
     std::ifstream m_Input;
     std::ofstream m_Output;
 
