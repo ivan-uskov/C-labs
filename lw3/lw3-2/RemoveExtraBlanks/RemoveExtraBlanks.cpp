@@ -3,12 +3,16 @@
 
 using namespace std;
 
+
 int main(int argc, char* argv[])
 {
-    string str;
-    getline(cin, str);
+    while (!cin.eof())
+    {
+        string str;
+        getline(cin, str);
 
-    cout << RemoveExtraSpaces(str) << endl;
+        cout << RemoveExtraSpaces(str) << endl;
+    }
 
     return 0;
 }

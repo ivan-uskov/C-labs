@@ -3,23 +3,57 @@
 
 using namespace std;
 
+bool IsNotSpace(char ch)
+{
+    return ch != ' ';
+}
+
+string::const_iterator FindFirstNotSpaceChar(string const& str)
+{
+    return find_if(str.begin(), str.end(), IsNotSpace);
+}
+
 string RemoveExtraSpaces(string const& arg)
 {
-    string str, temp;
-    istringstream iss(arg);
-    istream_iterator<string> start(iss);
-    istream_iterator<string> end;
+    string result;
 
-    copy(start, end, str.begin());
-    /*
-    while (iss >> temp)
+    //true is current character is part of word
+    bool isWord = true;
+
+    //print words and add spaces at beginning
+    for (auto it = FindFirstNotSpaceChar(arg); it < arg.end(); ++it)
     {
-        str += temp + " ";
-    }*/
-    if (str.size() > 0)
-    {
-        str.pop_back();
+        if (IsNotSpace(*it))
+        {
+            if (!isWord)
+            {
+                isWord = true;
+                result.push_back(' ');
+            }
+            result.push_back(*it);
+        }
+        else
+        {
+            isWord = false;
+        }
     }
 
-    return str;
+    return result;
+}
+
+string RemoveExtraSpacesSlow(string const& arg)
+{
+    istringstream iss(arg);
+    string result, tmp;
+
+    while (iss >> tmp)
+    {
+        result += tmp + ' ';
+    }
+
+    if (result.size() > 0)
+    {
+        result.pop_back();
+    }
+    return result;
 }
