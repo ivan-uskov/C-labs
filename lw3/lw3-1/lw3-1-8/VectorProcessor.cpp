@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "VectorProcessor.h"
-#include "Transformer.h"
 
 using namespace std;
 
@@ -22,6 +21,27 @@ double SumPositive(vector<double> const& vec)
     };
     return accumulate(vec.begin(), vec.end(), 0.0, positiveSumator);
 }
+
+struct CTransformer
+{
+public:
+	CTransformer(const double positivesSum)
+		: m_isEven(false)
+		, m_positivesSum(positivesSum)
+	{
+	}
+
+	double operator() (double i)
+	{
+		auto modified = (m_isEven) ? i - m_positivesSum : i * 2;
+		m_isEven = !m_isEven;
+		return modified;
+	}
+
+private:
+	bool m_isEven;
+	const double m_positivesSum;
+};
 
 /*
     Even vec elements *= 2
