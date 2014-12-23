@@ -21,7 +21,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WordCounter.h">
+    <ClInclude Include="CalculateWords.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="lw3-3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WordCounter.cpp">
+    <ClCompile Include="CalculateWords.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

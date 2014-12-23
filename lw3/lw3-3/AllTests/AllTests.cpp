@@ -1,41 +1,31 @@
 #include "stdafx.h"
-#include "../lw3-3/WordCounter.cpp"
+#include "../lw3-3/CalculateWords.cpp"
+#include <sstream>
 
 using namespace std;
 
-struct WordCounterFixture
+// Возвращает true, если вычисленные частоты встеречаемости слов в переданном тексте совпадают с ожидаемыми
+bool WordFrequenciesCalculationIsCorrect(std::string const& inputText, WordFrequencies const& expectedWordFrequencies)
 {
-    CWordCounter counter;
-};
-
-bool IsEqualWordCounts(CWordCounter::Words const& words1, CWordCounter::Words const& words2)
-{
-    return words1 == words2;
+    auto calculetedWordFrequncies = CalculateWordFrequencies(istringstream(inputText));
+    return calculetedWordFrequncies == expectedWordFrequencies;
 }
 
-BOOST_FIXTURE_TEST_SUITE(WordCounterTests, WordCounterFixture)
+BOOST_AUTO_TEST_SUITE(WordCounterTests, WordCounterFixture)
 
     BOOST_AUTO_TEST_CASE(TestInsertOneWord)
     {
-        counter("Hello");
-
-        BOOST_CHECK(IsEqualWordCounts(counter.GetWords(), { { "hello", 1 } }));
+        BOOST_CHECK(WordFrequenciesCalculationIsCorrect("Hello", { { "hello", 1 } }));
     }
 
     BOOST_AUTO_TEST_CASE(TestInsertTwoWords)
     {
-        counter("Hello");
-        counter("Privet");
-
-        BOOST_CHECK(IsEqualWordCounts(counter.GetWords(), { { "hello", 1 }, { "privet", 1 } }));
+        BOOST_CHECK(WordFrequenciesCalculationIsCorrect("Hello Privet", { { "hello", 1 }, { "privet", 1 } }));
     }
 
     BOOST_AUTO_TEST_CASE(TestInsertWordTwice)
     {
-        counter("Privet");
-        counter("Privet");
-
-        BOOST_CHECK(IsEqualWordCounts(counter.GetWords(), { { "privet", 2 } }));
+        BOOST_CHECK(WordFrequenciesCalculationIsCorrect("Privet PriveT", { { "privet", 2 } }));
     }
 
 BOOST_AUTO_TEST_SUITE_END()
