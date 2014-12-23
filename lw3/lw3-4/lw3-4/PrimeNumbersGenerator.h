@@ -1,5 +1,5 @@
 #include "stdafx.h"
+#include <numeric>
 
-const int MAX_UPPER_BOUND = 100000;
-
-std::set<int> GeneratePrimeNumbersSet(int upperBound);
+bool CheckUpperBound(const size_t upperBound);
+std::set<size_t> GeneratePrimeNumbersSet(size_t upperBound);

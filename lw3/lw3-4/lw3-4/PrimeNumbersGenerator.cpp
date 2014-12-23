@@ -2,56 +2,63 @@
 #include "PrimeNumbersGenerator.h"
 #include <boost/iterator/counting_iterator.hpp>
 #include <cmath>
+#include <vector>
 
 using namespace std;
 
-void EraseNumSequence(set<int> & numbers, const int startNum)
+void EraseNumberSequence(vector<bool> & numbers, const size_t start)
 {
-    const int MAX_NUMBER = *numbers.rbegin();
-    int erasedItem = startNum + startNum;
-    set<int>::iterator it;
+    size_t current = start + start;
+    const size_t NUMBERS_SIZE = numbers.size();
 
-    while (erasedItem <= MAX_NUMBER)
+    while (current < NUMBERS_SIZE)
     {
-        if ((it = numbers.find(erasedItem)) != numbers.end())
+        numbers[current] = false;
+        current += start;
+    }
+}
+
+void EraseComponentNums(vector<bool> & numbers)
+{
+    size_t currStartNum = 2;
+    const size_t MAX_START_NUM = static_cast<size_t>(sqrt(numbers.size()));
+
+    while (currStartNum <= MAX_START_NUM)
+    {
+        EraseNumberSequence(numbers, currStartNum++);
+    }
+}
+
+bool CheckUpperBound(const size_t upperBound)
+{
+    return 1 < upperBound && upperBound <= std::numeric_limits<size_t>::max();
+}
+
+set<size_t> Vector2Set(vector<bool> numbers)
+{
+    const size_t FIRST_PRIME_NUM = 2;
+    set<size_t> primes;
+
+    for (size_t i = FIRST_PRIME_NUM; i < numbers.size(); ++i)
+    {
+        if (numbers[i])
         {
-            numbers.erase(it);
+            primes.insert(i);
         }
-        erasedItem += startNum;
     }
+
+    return primes;
 }
 
-void EraseComponentNums(set<int> & numbers, const int upperBound)
-{
-    int maxSequnceStartNum = static_cast<int>(sqrt(upperBound));
-    auto item = numbers.begin();
-
-    while (*item <= maxSequnceStartNum)
-    {
-        EraseNumSequence(numbers, *item);
-        ++item;
-    }
-}
-
-bool CheckUpperBound(const int upperBound)
-{
-    return 1 < upperBound && upperBound <= MAX_UPPER_BOUND;
-}
-
-set<int> GeneratePrimeNumbersSet(int upperBound)
+set<size_t> GeneratePrimeNumbersSet(size_t upperBound)
 {
     if (!CheckUpperBound(upperBound))
     {
         return {};
     }
 
-    set<int> numbers
-    (
-        boost::counting_iterator<int>(2),
-        boost::counting_iterator<int>(upperBound + 1)
-    );
+    vector<bool> numbers(upperBound + 1, true);
+    EraseComponentNums(numbers);
 
-    EraseComponentNums(numbers, upperBound);
-
-    return numbers;
+    return Vector2Set(numbers);
 }
