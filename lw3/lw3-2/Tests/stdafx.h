@@ -9,6 +9,6 @@
 #define BOOST_TEST_MODULE Task2TestModule
 #define BOOST_TEST_INCLUDED
 #pragma warning (disable:4702)	// отключаем предупреждение компилятора Visual Studio об unreachable code
-#include <./boost/test/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 ///=======================================
 

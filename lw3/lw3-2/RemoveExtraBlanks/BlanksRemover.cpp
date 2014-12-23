@@ -10,12 +10,14 @@ bool IsNotSpace(char ch)
 
 string::const_iterator FindFirstNotSpaceChar(string const& str)
 {
-    return find_if(str.begin(), str.end(), IsNotSpace);
+    auto firstCharId = str.find_first_not_of(" ");
+    return (firstCharId != string::npos) ? str.begin() + firstCharId : str.begin();
 }
 
 string RemoveExtraSpaces(string const& arg)
 {
     string result;
+    result.reserve(arg.size());
 
     //true is current character is part of word
     bool isWord = true;
