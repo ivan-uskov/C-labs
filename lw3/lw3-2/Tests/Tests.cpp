@@ -10,6 +10,11 @@ BOOST_AUTO_TEST_CASE(CheckEmptyString)
     BOOST_CHECK_EQUAL(RemoveExtraSpaces({}), "");
 }
 
+BOOST_AUTO_TEST_CASE(CheckStringOnlyWithSpaces)
+{
+    BOOST_CHECK_EQUAL(RemoveExtraSpaces({ "        " }), "");
+}
+
 BOOST_AUTO_TEST_CASE(CheckCorrectString)
 {
     BOOST_CHECK_EQUAL(RemoveExtraSpaces({ "1234 1234" }), "1234 1234");

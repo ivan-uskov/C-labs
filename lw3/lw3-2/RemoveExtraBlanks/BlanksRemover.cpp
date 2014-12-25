@@ -3,15 +3,10 @@
 
 using namespace std;
 
-bool IsNotSpace(char ch)
-{
-    return ch != ' ';
-}
-
 string::const_iterator FindFirstNotSpaceChar(string const& str)
 {
     auto firstCharId = str.find_first_not_of(" ");
-    return (firstCharId != string::npos) ? str.begin() + firstCharId : str.begin();
+    return (firstCharId != string::npos) ? str.begin() + firstCharId : str.end();
 }
 
 string RemoveExtraSpaces(string const& arg)
@@ -25,7 +20,7 @@ string RemoveExtraSpaces(string const& arg)
     //print words and add spaces at beginning
     for (auto it = FindFirstNotSpaceChar(arg); it < arg.end(); ++it)
     {
-        if (IsNotSpace(*it))
+        if (*it != ' ')
         {
             if (!isWord)
             {
