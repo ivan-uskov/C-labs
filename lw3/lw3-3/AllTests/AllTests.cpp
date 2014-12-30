@@ -11,7 +11,17 @@ bool WordFrequenciesCalculationIsCorrect(std::string const& inputText, WordFrequ
     return calculetedWordFrequncies == expectedWordFrequencies;
 }
 
-BOOST_AUTO_TEST_SUITE(WordCounterTests, WordCounterFixture)
+BOOST_AUTO_TEST_SUITE(WordCounterTests)
+
+    BOOST_AUTO_TEST_CASE(TestEmptyString)
+    {
+        BOOST_CHECK(WordFrequenciesCalculationIsCorrect("", {}));
+    }
+
+    BOOST_AUTO_TEST_CASE(TestStringWithSpaces)
+    {
+        BOOST_CHECK(WordFrequenciesCalculationIsCorrect("      ", {}));
+    }
 
     BOOST_AUTO_TEST_CASE(TestInsertOneWord)
     {
