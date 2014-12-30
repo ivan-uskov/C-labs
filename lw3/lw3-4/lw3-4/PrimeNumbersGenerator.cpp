@@ -18,7 +18,7 @@ void EraseNumberSequence(vector<bool> & numbers, const size_t start)
     }
 }
 
-void EraseComponentNums(vector<bool> & numbers)
+void EraseCompositeNums(vector<bool> & numbers)
 {
     size_t currStartNum = 2;
     const size_t MAX_START_NUM = static_cast<size_t>(sqrt(numbers.size()));
@@ -34,16 +34,16 @@ bool CheckUpperBound(const size_t upperBound)
     return 1 < upperBound && upperBound <= std::numeric_limits<size_t>::max();
 }
 
-set<size_t> Vector2Set(vector<bool> numbers)
+set<size_t> SieveToSet(vector<bool> const& sieve)
 {
     const size_t FIRST_PRIME_NUM = 2;
     set<size_t> primes;
 
-    for (size_t i = FIRST_PRIME_NUM; i < numbers.size(); ++i)
+    for (size_t i = FIRST_PRIME_NUM; i < sieve.size(); ++i)
     {
-        if (numbers[i])
+        if (sieve[i])
         {
-            primes.insert(i);
+            primes.insert(primes.end(), i);
         }
     }
 
@@ -58,7 +58,7 @@ set<size_t> GeneratePrimeNumbersSet(size_t upperBound)
     }
 
     vector<bool> numbers(upperBound + 1, true);
-    EraseComponentNums(numbers);
+    EraseCompositeNums(numbers);
 
-    return Vector2Set(numbers);
+    return SieveToSet(numbers);
 }
