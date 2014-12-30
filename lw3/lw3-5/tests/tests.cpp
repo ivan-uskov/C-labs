@@ -41,6 +41,20 @@ BOOST_AUTO_TEST_CASE(SimpleUrlWithPort)
     BOOST_CHECK(document == "");
 }
 
+BOOST_AUTO_TEST_CASE(UrlWithIncorrectMaxPort)
+{
+    BOOST_CHECK(!ParseURL("http://google.com:65536", protocol, port, host, document));
+}
+
+BOOST_AUTO_TEST_CASE(UrlWithMaxPort)
+{
+    BOOST_CHECK(ParseURL("http://google.com:65535", protocol, port, host, document));
+    BOOST_CHECK(protocol == Protocol::HTTP);
+    BOOST_CHECK(host == "google.com");
+    BOOST_CHECK(port == 65535);
+    BOOST_CHECK(document == "");
+}
+
 BOOST_AUTO_TEST_CASE(SimpleUrlWithPortAndDocument)
 {
     BOOST_CHECK(ParseURL("ftp://google.com:80/kotiki.png", protocol, port, host, document));

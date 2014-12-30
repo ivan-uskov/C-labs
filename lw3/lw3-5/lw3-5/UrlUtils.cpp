@@ -59,7 +59,7 @@ bool ParseURL(std::string const& url, Protocol & protocol, int & port, std::stri
     smatch matches;
     string urlStr(url);
     boost::algorithm::to_lower(urlStr);
-    regex checker("^(http[s]?|ftp)://([^/:]+)(:([0-9]+))?(/(.*)?)?$");
+    regex checker("^(http[s]?|ftp)://([^/:]+)(:([0-5]?[0-9]{0,4}|[0-6][0-5][0-5][0-3][0-5]))?(/(.*)?)?$");
 
     if (regex_match(urlStr, matches, checker))
     {
