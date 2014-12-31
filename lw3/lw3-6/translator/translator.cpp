@@ -18,7 +18,7 @@ bool ReadEngWord(string & str)
 
 bool PrintTranslation(CDictionary const& dictionary, string const& eng)
 {
-    string rus(dictionary(eng));
+    string rus(dictionary.Translate(eng));
     if (!rus.empty())
     {
         cout << rus << endl;
@@ -33,7 +33,7 @@ void AskForAddTranslation(CDictionary & dictionary, string const& eng)
     cout << "Ќеизвестное слово У" << eng << "Ф. ¬ведите перевод или пустую строку дл€отказа." << endl;
     if (ReadLine(rus))
     {
-        dictionary.Add(eng, rus);
+        dictionary.AddTranslation(eng, rus);
         cout << "—лово У" << eng << "Ф сохранено в словаре как У" << rus << "Ф." << endl;
     }
 }

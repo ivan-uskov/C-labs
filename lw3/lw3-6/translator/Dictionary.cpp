@@ -5,6 +5,13 @@
 
 using namespace std;
 
+std::string ToLower(std::string const& str)
+{
+    string becomeLowerCased(str);
+    boost::algorithm::to_lower(becomeLowerCased);
+    return becomeLowerCased;
+}
+
 CDictionary::CDictionary(string const& translationsFilePath)
     : m_error(false)
     , m_translationsFilePath(translationsFilePath)
@@ -27,15 +34,13 @@ CDictionary::~CDictionary()
 {
 }
 
-/* Operators */
+/* Public methods */
 
-std::string CDictionary::operator()(std::string const& engWord)const
+std::string CDictionary::Translate(std::string const& engWord)const
 {
-    auto it = m_dictionary.find(GetLower(engWord));
+    auto it = m_dictionary.find(ToLower(engWord));
     return it != m_dictionary.end() ? it->second : string();
 }
-
-/* Public methods */
 
 bool CDictionary::IsError()const
 {
@@ -47,9 +52,9 @@ bool CDictionary::IsModified()const
     return m_newWords.size() > 0;
 }
 
-bool CDictionary::Add(std::string const& key, std::string const& value)
+bool CDictionary::AddTranslation(std::string const& key, std::string const& value)
 {
-    string lowerKey(GetLower(key));
+    string lowerKey(ToLower(key));
     if (m_dictionary.find(lowerKey) == m_dictionary.end())
     {
         m_dictionary[lowerKey] = value;
@@ -59,7 +64,7 @@ bool CDictionary::Add(std::string const& key, std::string const& value)
     return false;
 }
 
-void CDictionary::FlushNewWords()
+void CDictionary::FlushNewWords()const
 {
     ofstream output(m_translationsFilePath, ios::app);
     output << endl;
@@ -80,27 +85,30 @@ void CDictionary::FlushNewWords()
 
 void CDictionary::ReadTranslations(ifstream & input)
 {
-    string str;
+    string phrase, translation;
     while (!input.eof())
     {
-        getline(input, str);
-        TryReadTranslation(GetLower(str));
+        getline(input, phrase);
+        translation = "oormveienrovenive";
+        if (ParseTranslation(phrase, translation))
+        {
+            m_dictionary[phrase] = translation;
+        }
     }
 }
 
-void CDictionary::TryReadTranslation(std::string const& str)
+bool CDictionary::ParseTranslation(string & phrase, string & translation)const
 {
     smatch matches;
     regex checker("^\\[([a-z]+)\\]\\s(.+)$", regex_constants::ECMAScript);
-    if (regex_match(str, matches, checker))
-    {
-        m_dictionary[matches[1].str()] = matches[2].str();
-    }
-}
 
-std::string CDictionary::GetLower(std::string const& str)const
-{
-    string becomeLowerCased(str);
-    boost::algorithm::to_lower(becomeLowerCased);
-    return becomeLowerCased;
+    if (regex_match(phrase, matches, checker))
+    {
+        string translationText(matches[2].str());
+
+        phrase = matches[1].str();
+        translation = translationText;
+        return true;
+    }
+    return false;
 }
