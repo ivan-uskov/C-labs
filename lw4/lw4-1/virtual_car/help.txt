@@ -1,0 +1,7 @@
+Info             - see virtual car state
+SetSpeed [int]   - set gear
+SetGear [int]    - set speed
+EngineOn         - turn on engine
+EngineOff        - turn off engine
+Help             - see list of commands
+End              - close virtual car
