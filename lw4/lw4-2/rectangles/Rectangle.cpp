@@ -19,6 +19,19 @@ bool IsRectangleIncludePoint(CRectangle const& rec, pair<int, int> point)
         IsNumInRange({ rec.GetTop(), rec.GetBottom() }, point.second);
 }
 
+bool IsAnyRec1PointInRec2(CRectangle const& rec1, CRectangle const& rec2)
+{
+    const int top = rec1.GetTop();
+    const int left = rec1.GetLeft();
+    const int right = rec1.GetRight();
+    const int bottom = rec1.GetBottom();
+
+    return IsRectangleIncludePoint(rec2, { left, top }) ||
+        IsRectangleIncludePoint(rec2, { left, bottom }) ||
+        IsRectangleIncludePoint(rec2, { right, top })   ||
+        IsRectangleIncludePoint(rec2, { right, bottom });
+}
+
 CRectangle::CRectangle(const int left, const int top, const int width, const int height)
     : m_left(MakePositive(left))
     , m_top(MakePositive(top))
@@ -49,22 +62,14 @@ void CRectangle::Scale(const int sx, const int sy)
 
 bool CRectangle::Intersect(CRectangle const& other)
 {
-    const int top = GetTop();
-    const int left = GetLeft();
-    const int right = GetRight();
-    const int bottom = GetBottom();
+    bool isIntersects = IsAnyRec1PointInRec2(other, *this) || IsAnyRec1PointInRec2(*this, other);
 
-    bool isIntersect = IsRectangleIncludePoint(other, { left, top }) ||
-        IsRectangleIncludePoint(other, { left, bottom }) ||
-        IsRectangleIncludePoint(other, { right, top })   ||
-        IsRectangleIncludePoint(other, { right, bottom });
-
-    if (isIntersect)
+    if (isIntersects)
     {
-        SetTop( min(top, other.GetTop()) );
-        SetLeft( max(left, other.GetLeft()) );
-        SetBottom( max(bottom, other.GetBottom()) );
-        SetRight( min(right, other.GetRight()) );
+        SetTop( max(GetTop(), other.GetTop()) );
+        SetLeft( max(GetLeft(), other.GetLeft()) );
+        SetBottom( min(GetBottom(), other.GetBottom()) );
+        SetRight( min(GetRight(), other.GetRight()) );
     }
     else
     {
@@ -72,7 +77,7 @@ bool CRectangle::Intersect(CRectangle const& other)
         m_height = 0;
     }
 
-    return isIntersect;
+    return isIntersects;
 }
 
 int CRectangle::GetArea()const

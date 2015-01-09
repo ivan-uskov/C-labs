@@ -5,17 +5,6 @@ using namespace std;
 
 typedef void (*Command)(CCar &, const int);
 
-enum class ActionType
-{
-    Info,
-    SetSpeed,
-    SetGear,
-    EngineOn,
-    EngineOff,
-    Help,
-    End
-};
-
 struct Action
 {
     Command command;

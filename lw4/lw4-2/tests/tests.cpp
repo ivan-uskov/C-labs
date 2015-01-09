@@ -134,18 +134,20 @@ BOOST_AUTO_TEST_CASE(VerifyIntersectMethod)
     CRectangle rec2(5, 6, 2, 3);
 
     BOOST_CHECK(!rec1.Intersect(rec2));
+    BOOST_CHECK_EQUAL(rec1.GetWidth(), 0);
+    BOOST_CHECK_EQUAL(rec1.GetHeight(), 0);
 
-    rec2.Move(-5, -6);
+    rec1.Scale(4, 5);
+    rec2.Move(-4, -5);
+
     BOOST_CHECK(rec1.Intersect(rec2));
+    BOOST_CHECK_EQUAL(rec1.GetLeft(), 1);
+    BOOST_CHECK_EQUAL(rec1.GetTop(), 1);
+    BOOST_CHECK_EQUAL(rec1.GetWidth(), 2);
+    BOOST_CHECK_EQUAL(rec1.GetHeight(), 3);
+    BOOST_CHECK_EQUAL(rec1.GetRight(), 3);
+    BOOST_CHECK_EQUAL(rec1.GetBottom(), 4);
 
-    rec2.Move(4, 0);
-    BOOST_CHECK(rec1.Intersect(rec2));
-
-    rec2.Move(1, 5);
-    BOOST_CHECK(!rec1.Intersect(rec2));
-
-    rec2.Move(-2, -1);
-    BOOST_CHECK(rec1.Intersect(rec2));
 }
 
 BOOST_AUTO_TEST_CASE(VerifyGetAreaMethod)
