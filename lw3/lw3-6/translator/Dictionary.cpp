@@ -107,7 +107,7 @@ bool CDictionary::ParseTranslation(string & phrase, string & translation)const
         string translationText(matches[2].str());
 
         phrase = matches[1].str();
-        translation = translationText;
+        translation = matches[2].str();
         return true;
     }
     return false;

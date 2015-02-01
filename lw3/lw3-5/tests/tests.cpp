@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(SimpleUrlWithPort)
 
 BOOST_AUTO_TEST_CASE(UrlWithIncorrectMaxPort)
 {
-    BOOST_CHECK(!ParseURL("http://google.com:65536", protocol, port, host, document));
+    BOOST_CHECK(!ParseURL("http://google.com:64999", protocol, port, host, document));
 }
 
 BOOST_AUTO_TEST_CASE(UrlWithMaxPort)
