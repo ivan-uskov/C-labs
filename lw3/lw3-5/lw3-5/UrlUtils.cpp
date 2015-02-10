@@ -47,10 +47,15 @@ int GetPortByText(string const& portText, Protocol const& protocol)
     {
         return boost::lexical_cast<int>(portText);
     }
-    catch (bad_cast const& e)
+    catch (bad_cast const&)
     {
         return GetDefaultPort(protocol);
     }
+}
+
+bool CheckCorrectPort(int const port)
+{
+    return (MIN_PORT <= port) && (port <= MAX_PORT);
 }
 
 bool ParseURL(std::string const& url, Protocol & protocol, int & port, std::string & host,
@@ -59,7 +64,7 @@ bool ParseURL(std::string const& url, Protocol & protocol, int & port, std::stri
     smatch matches;
     string urlStr(url);
     boost::algorithm::to_lower(urlStr);
-    regex checker("^(http[s]?|ftp)://([^/:]+)(:([0-5]?[0-9]{0,4}|[0-6][0-5][0-5][0-3][0-5]))?(/(.*)?)?$");
+    regex checker("^(http[s]?|ftp)://([^/:]+)(:([0-9]{0,5}))?(/(.*)?)?$");
 
     if (regex_match(urlStr, matches, checker))
     {
@@ -68,7 +73,7 @@ bool ParseURL(std::string const& url, Protocol & protocol, int & port, std::stri
         port = GetPortByText(matches[4].str(), protocol);
         document = matches[6].str();
 
-        return true;
+        return CheckCorrectPort(port);
     }
     return false;
 }

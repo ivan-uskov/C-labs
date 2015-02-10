@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../lw3-5/UrlUtils.cpp"
+#include "../lw3-5/UrlUtils.h"
 
 using namespace std;
 
@@ -41,9 +41,13 @@ BOOST_AUTO_TEST_CASE(SimpleUrlWithPort)
     BOOST_CHECK(document == "");
 }
 
-BOOST_AUTO_TEST_CASE(UrlWithIncorrectMaxPort)
+BOOST_AUTO_TEST_CASE(UrlWithBigPort)
 {
-    BOOST_CHECK(!ParseURL("http://google.com:64999", protocol, port, host, document));
+    BOOST_CHECK(ParseURL("http://google.com:64999", protocol, port, host, document));
+    BOOST_CHECK(protocol == Protocol::HTTP);
+    BOOST_CHECK(host == "google.com");
+    BOOST_CHECK(port == 64999);
+    BOOST_CHECK(document == "");
 }
 
 BOOST_AUTO_TEST_CASE(UrlWithMaxPort)
@@ -68,6 +72,5 @@ BOOST_AUTO_TEST_CASE(SimpleIncorrectUrl)
 {
     BOOST_CHECK(!ParseURL("ololo://google.com:a/kotiki.png", protocol, port, host, document));
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()
