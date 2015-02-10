@@ -85,28 +85,26 @@ void CDictionary::FlushNewWords()const
 
 void CDictionary::ReadTranslations(ifstream & input)
 {
-    string phrase, translation;
+    string phrase, key, translation;
     while (!input.eof())
     {
         getline(input, phrase);
         translation = "oormveienrovenive";
-        if (ParseTranslation(phrase, translation))
+        if (ParseTranslation(phrase, key, translation))
         {
-            m_dictionary[phrase] = translation;
+            m_dictionary[key] = translation;
         }
     }
 }
 
-bool CDictionary::ParseTranslation(string & phrase, string & translation)const
+bool CDictionary::ParseTranslation(string const& phrase, string & key, string & translation)const
 {
     smatch matches;
     regex checker("^\\[([a-z]+)\\]\\s(.+)$", regex_constants::ECMAScript);
 
     if (regex_match(phrase, matches, checker))
     {
-        string translationText(matches[2].str());
-
-        phrase = matches[1].str();
+        key = matches[1].str();
         translation = matches[2].str();
         return true;
     }

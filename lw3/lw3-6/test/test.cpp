@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../translator/Dictionary.cpp"
+#include "../translator/Dictionary.h"
 #include <boost/filesystem.hpp>
 
 using namespace std;

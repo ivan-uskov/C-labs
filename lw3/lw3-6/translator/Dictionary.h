@@ -1,4 +1,8 @@
 #pragma once
+#include <map>
+#include <string>
+#include <vector>
+#include <fstream>
 
 class CDictionary
 {
@@ -21,6 +25,6 @@ private:
     std::map<std::string, std::string> m_dictionary;
 
     void ReadTranslations(std::ifstream & input);
-    bool ParseTranslation(std::string & phrase, std::string & translation)const;
+    bool ParseTranslation(std::string const& phrase, std::string & key, std::string & translation)const;
 };
 
