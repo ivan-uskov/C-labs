@@ -89,7 +89,6 @@ void ExecuteEngineOff(CCar & car, const int argument)
 
 void ExecuteHelp(CCar & car, const int argument)
 {
-    char ch;
     ifstream helpFile("help.txt");
 
     while (helpFile.peek() != EOF)

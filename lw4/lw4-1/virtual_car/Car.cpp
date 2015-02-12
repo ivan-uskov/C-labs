@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool IsSpeedInRange(pair<int, int> range, int speed);
+bool IsSpeedInRange(pair<int, int> const& range, int const speed);
 
 CCar::CCar()
     : m_isEngineOn(false)
@@ -147,7 +147,7 @@ void CCar::UpdateDirection()
     }
 }
 
-bool IsSpeedInRange(pair<int, int> range, const int speed)
+bool IsSpeedInRange(pair<int, int> const& range, int const speed)
 {
     return (range.first <= speed) && (speed <= range.second);
 }
