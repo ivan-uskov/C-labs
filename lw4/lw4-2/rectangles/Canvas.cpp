@@ -11,7 +11,6 @@ CCanvas::CCanvas(unsigned width, unsigned height)
     , m_width(width)
     , m_height(height)
 {
-
 }
 
 
@@ -33,12 +32,12 @@ unsigned CCanvas::GetHeight()const
 
 void CCanvas::Clear(char code)
 {
-    transform(m_canvas.begin(), m_canvas.end(), m_canvas.begin(), [code](char ch){ return code; });
+    fill(m_canvas.begin(), m_canvas.end(), code);
 }
 
 void CCanvas::SetPixel(int x, int y, char code)
 {
-    if (IsCharacterWriteble(code) && IsPixelExists(x, y))
+    if (IsCharacterWriteble(code) && PixelExists(x, y))
     {
         m_canvas[GetPixelPosition(x, y)] = code;
     }
@@ -46,7 +45,7 @@ void CCanvas::SetPixel(int x, int y, char code)
 
 char CCanvas::GetPixel(int x, int y)const
 {
-    return IsPixelExists(x, y) ? m_canvas[GetPixelPosition(x, y)] : ' ';
+    return PixelExists(x, y) ? m_canvas[GetPixelPosition(x, y)] : 0;
 }
 
 void CCanvas::Write(std::ostream & ostream)const
@@ -63,9 +62,9 @@ void CCanvas::Write(std::ostream & ostream)const
 
 /* Private methods */
 
-bool CCanvas::IsPixelExists(unsigned x, unsigned y)const
+bool CCanvas::PixelExists(unsigned x, unsigned y)const
 {
-    return GetPixelPosition(x, y) < (m_width * m_height);
+    return (x < m_width) && (y < m_height);
 }
 
 unsigned CCanvas::GetPixelPosition(unsigned x, unsigned y)const

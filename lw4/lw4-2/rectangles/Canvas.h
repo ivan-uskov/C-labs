@@ -21,7 +21,7 @@ private:
     unsigned m_width, m_height;
     std::vector<char> m_canvas;
 
-    bool IsPixelExists(unsigned x, unsigned y)const;
+    bool PixelExists(unsigned x, unsigned y)const;
     unsigned GetPixelPosition(unsigned x, unsigned y)const;
 };
 

@@ -5,42 +5,16 @@ using namespace std;
 
 int MakePositive(const int num)
 {
-    return num > 0 ? num : 0;
-}
-
-bool IsNumInRange(pair<int, int> const& range, const int num)
-{
-    return range.first <= num && num <= range.second;
-}
-
-bool IsRectangleIncludePoint(CRectangle const& rec, pair<int, int> point)
-{
-    return IsNumInRange({ rec.GetLeft(), rec.GetRight() }, point.first) &&
-        IsNumInRange({ rec.GetTop(), rec.GetBottom() }, point.second);
-}
-
-bool IsAnyRec1PointInRec2(CRectangle const& rec1, CRectangle const& rec2)
-{
-    const int top = rec1.GetTop();
-    const int left = rec1.GetLeft();
-    const int right = rec1.GetRight();
-    const int bottom = rec1.GetBottom();
-
-    return IsRectangleIncludePoint(rec2, { left, top }) ||
-        IsRectangleIncludePoint(rec2, { left, bottom }) ||
-        IsRectangleIncludePoint(rec2, { right, top })   ||
-        IsRectangleIncludePoint(rec2, { right, bottom });
+    return max(num, 0);
 }
 
 CRectangle::CRectangle(const int left, const int top, const int width, const int height)
-    : m_left(MakePositive(left))
-    , m_top(MakePositive(top))
+    : m_left(left)
+    , m_top(top)
     , m_width(MakePositive(width))
     , m_height(MakePositive(height))
 {
-
 }
-
 
 CRectangle::~CRectangle()
 {
@@ -50,26 +24,39 @@ CRectangle::~CRectangle()
 
 void CRectangle::Move(const int dx, const int dy)
 {
-    m_left = MakePositive(m_left + dx);
-    m_top = MakePositive(m_top + dy);
+    m_left = m_left + dx;
+    m_top = m_top + dy;
 }
 
 void CRectangle::Scale(const int sx, const int sy)
 {
-    m_width = MakePositive(m_width + sx);
-    m_height = MakePositive(m_height + sy);
+    if (sx > 0)
+    {
+        m_width = m_width * sx;
+    }
+
+    if (sy > 0)
+    {
+        m_height = m_height * sy;
+    }
 }
 
 bool CRectangle::Intersect(CRectangle const& other)
 {
-    bool isIntersects = IsAnyRec1PointInRec2(other, *this) || IsAnyRec1PointInRec2(*this, other);
+    bool intersects = !(m_top > other.GetBottom() || 
+        GetBottom() < other.GetTop() || 
+        GetRight() < other.GetLeft() || 
+        m_left > other.GetRight());
 
-    if (isIntersects)
+    if (intersects)
     {
+        int bottom = GetBottom();
+        int right = GetRight();
+
         SetTop( max(GetTop(), other.GetTop()) );
         SetLeft( max(GetLeft(), other.GetLeft()) );
-        SetBottom( min(GetBottom(), other.GetBottom()) );
-        SetRight( min(GetRight(), other.GetRight()) );
+        SetBottom( min(bottom, other.GetBottom()) );
+        SetRight( min(right, other.GetRight()) );
     }
     else
     {
@@ -77,7 +64,7 @@ bool CRectangle::Intersect(CRectangle const& other)
         m_height = 0;
     }
 
-    return isIntersects;
+    return intersects;
 }
 
 int CRectangle::GetArea()const

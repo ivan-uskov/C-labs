@@ -115,15 +115,15 @@ int main(int argc, char* argv[])
     }
 
     CCanvas canvas(60, 20);
-
     ProcessRectangles(rec1Input, rec2Input, canvas);
 
     ofstream output;
 
-    if (argc > 3 && string(argv[3]) != "")
+    if (argc > 3 && !string(argv[3]).empty())
     {
         ofstream output(argv[3]);
         canvas.Write(output);
+        output.close();
     }
     else
     {
