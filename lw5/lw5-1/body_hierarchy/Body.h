@@ -1,20 +1,15 @@
 #pragma once
+#include <string>
 
 class CBody
 {
-
 public:
 
-    CBody();
-    virtual ~CBody();
+    virtual double GetVolume()const = 0;
+    virtual double GetDensity()const = 0;
+    virtual double GetWeight()const = 0;
+    virtual std::string ToString()const = 0;
 
-    virtual size_t GetVolume()const;
-    virtual size_t GetDensity()const;
-    virtual size_t GetWeight()const;
-
-protected:
-    size_t m_volume;
-    size_t m_density;
-    size_t m_weight;
+    virtual ~CBody(){};
 };
 

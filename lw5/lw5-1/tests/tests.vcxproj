@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)temp\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)temp\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)temp\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)temp\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)temp\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)temp\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -82,10 +82,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\body_hierarchy\Body.h" />
+    <ClInclude Include="..\body_hierarchy\Cone.h" />
+    <ClInclude Include="..\body_hierarchy\Cylinder.h" />
+    <ClInclude Include="..\body_hierarchy\Parallelepiped.h" />
+    <ClInclude Include="..\body_hierarchy\SimplexBodyImpl.h" />
+    <ClInclude Include="..\body_hierarchy\Sphere.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\body_hierarchy\Body.cpp" />
+    <ClCompile Include="..\body_hierarchy\Cone.cpp" />
+    <ClCompile Include="..\body_hierarchy\Cylinder.cpp" />
+    <ClCompile Include="..\body_hierarchy\Parallelepiped.cpp" />
+    <ClCompile Include="..\body_hierarchy\SimplexBodyImpl.cpp" />
+    <ClCompile Include="..\body_hierarchy\Sphere.cpp" />
+    <ClCompile Include="ConeTests.cpp" />
+    <ClCompile Include="CylinderTests.cpp" />
+    <ClCompile Include="ParallelepipedTests.cpp" />
+    <ClCompile Include="SphereTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
