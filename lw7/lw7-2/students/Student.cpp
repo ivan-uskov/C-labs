@@ -22,20 +22,9 @@ CStudent::CStudent(unsigned age, string const& name, string const& surname, stri
     AssignFullName(name, surname, patronymic);
 }
 
-bool CStudent::Rename(std::string const& name, std::string const& surname, std::string const& patronymic)
+void CStudent::Rename(std::string const& name, std::string const& surname, std::string const& patronymic)
 {
-    bool isRenamed = true;
-
-    try
-    {
-        AssignFullName(name, surname, patronymic);
-    }
-    catch (exception const&)
-    {
-        isRenamed = false;
-    }
-
-    return isRenamed;
+    AssignFullName(name, surname, patronymic);
 }
 
 void CStudent::SetAge(unsigned age)

@@ -12,7 +12,7 @@ public:
     std::string const& GetPatronymic()const;
     unsigned GetAge()const;
 
-    bool Rename(std::string const& name, std::string const& surname, std::string const& patronymic = std::string());
+    void Rename(std::string const& name, std::string const& surname, std::string const& patronymic = std::string());
     void SetAge(unsigned age);
 
 private:

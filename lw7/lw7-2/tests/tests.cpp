@@ -58,12 +58,12 @@ BOOST_AUTO_TEST_CASE(GetAgeReturnAge)
     BOOST_CHECK_EQUAL(CStudent(15, "Vasya", "Ivanov").GetAge(), 15);
 }
 
-BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
+BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsThrowsAndSafeOldValues)
 {
     {
         CStudent student(16, "Vasya", "Ivanov");
         // Имя с пробелами
-        BOOST_CHECK_NO_THROW(student.Rename("Va s y a", "Ivanov"));
+        BOOST_CHECK_THROW(student.Rename("Va s y a", "Ivanov"), invalid_argument);
         BOOST_CHECK_EQUAL(student.GetName(), "Vasya");
         BOOST_CHECK_EQUAL(student.GetSurname(), "Ivanov");
         BOOST_CHECK_EQUAL(student.GetPatronymic(), "");
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
     {
         CStudent student(16, "Vasya", "Ivanov");
         // Пустое имя
-        BOOST_CHECK_NO_THROW(student.Rename("", "Ivanov"));
+        BOOST_CHECK_THROW(student.Rename("", "Ivanov"), invalid_argument);
         BOOST_CHECK_EQUAL(student.GetName(), "Vasya");
         BOOST_CHECK_EQUAL(student.GetSurname(), "Ivanov");
         BOOST_CHECK_EQUAL(student.GetPatronymic(), "");
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
     {
         CStudent student(16, "Vasya", "Ivanov");
         // Фамилия с пробелами
-        BOOST_CHECK_NO_THROW(student.Rename("Vasya", "I va n ov"));
+        BOOST_CHECK_THROW(student.Rename("Vasya", "I va n ov"), invalid_argument);
         BOOST_CHECK_EQUAL(student.GetName(), "Vasya");
         BOOST_CHECK_EQUAL(student.GetSurname(), "Ivanov");
         BOOST_CHECK_EQUAL(student.GetPatronymic(), "");
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
     {
         CStudent student(16, "Vasya", "Ivanov");
         // Пустая фамилия
-        BOOST_CHECK_NO_THROW(student.Rename("Vasya", ""));
+        BOOST_CHECK_THROW(student.Rename("Vasya", ""), invalid_argument);
         BOOST_CHECK_EQUAL(student.GetName(), "Vasya");
         BOOST_CHECK_EQUAL(student.GetSurname(), "Ivanov");
         BOOST_CHECK_EQUAL(student.GetPatronymic(), "");
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
     {
         CStudent student(16, "Vasya", "Ivanov", "Petrovich");
         // Отчество с пробелами
-        BOOST_CHECK_NO_THROW(student.Rename("Vasya", "Ivanov", "Pe t r o vi ch"));
+        BOOST_CHECK_THROW(student.Rename("Vasya", "Ivanov", "Pe t r o vi ch"), invalid_argument);
         BOOST_CHECK_EQUAL(student.GetName(), "Vasya");
         BOOST_CHECK_EQUAL(student.GetSurname(), "Ivanov");
         BOOST_CHECK_EQUAL(student.GetPatronymic(), "Petrovich");
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(RenameWithIncorrectArgsNotThrowAndSafeOldValues)
 BOOST_AUTO_TEST_CASE(RenameChangeFullName)
 {
     CStudent student(16, "Vasya", "Ivanov", "Petrovich");
-    BOOST_CHECK(student.Rename("Ivan", "Petrov", "Ivanovich"));
+    BOOST_CHECK_NO_THROW(student.Rename("Ivan", "Petrov", "Ivanovich"));
     BOOST_CHECK_EQUAL(student.GetName(), "Ivan");
     BOOST_CHECK_EQUAL(student.GetSurname(), "Petrov");
     BOOST_CHECK_EQUAL(student.GetPatronymic(), "Ivanovich");
