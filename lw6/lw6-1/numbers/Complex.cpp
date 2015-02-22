@@ -33,7 +33,7 @@ double CComplex::GetArgument()const
         return M_PI / 2;
     }
 
-    return atan(m_image / m_real);
+    return atan2(m_image, m_real);
 }
 
 void CComplex::Assign(double real, double image)
@@ -106,6 +106,21 @@ CComplex & CComplex::operator /= (CComplex const& rhs)
 CComplex const operator / (CComplex lhs, CComplex const& rhs)
 {
     return lhs /= rhs;
+}
+
+CComplex & CComplex::operator ^= (double step)
+{
+    double rCoef = pow(GetMagnitude(), step);
+    double arg = GetArgument();
+
+    Assign(rCoef * cos(step * arg), rCoef * sin(step * arg));
+
+    return *this;
+}
+
+CComplex const CComplex::operator ^ (double step)
+{
+    return CComplex(*this) ^= step;
 }
 
 std::ostream & operator << (std::ostream & out, CComplex const& num)

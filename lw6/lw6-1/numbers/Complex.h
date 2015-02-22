@@ -23,6 +23,9 @@ public:
     CComplex & operator *= (CComplex const& rhs);
     CComplex & operator /= (CComplex const& rhs);
 
+    CComplex const operator ^ (double step);
+    CComplex & operator ^= (double step);
+
     friend std::ostream & operator << (std::ostream & out, CComplex const& num);
     friend std::istream & operator >> (std::istream & in, CComplex & num);
 

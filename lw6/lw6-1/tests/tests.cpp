@@ -25,7 +25,7 @@ bool NewComplexCorrect(double re, double im)
     BOOST_CHECK(isCorrect = isCorrect && DblsEqualy(num.Re(), re));
     BOOST_CHECK(isCorrect = isCorrect && DblsEqualy(num.Im(), im));
     BOOST_CHECK(isCorrect = isCorrect && DblsEqualy(num.GetMagnitude(), sqrt(pow(re, 2) + pow(im, 2))));
-    BOOST_CHECK(isCorrect = isCorrect && DblsEqualy(num.GetArgument(), (DblsEqualy(re, 0) ? (M_PI / 2) : atan(im / re))));
+    BOOST_CHECK(isCorrect = isCorrect && DblsEqualy(num.GetArgument(), (DblsEqualy(re, 0) ? (M_PI / 2) : atan2(im, re))));
 
     return isCorrect;
 }
