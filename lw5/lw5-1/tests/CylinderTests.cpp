@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(NewCylinder)
 
     BOOST_CHECK(CheckDoublesAreEqual(cylinder.GetDensity(), density));
     BOOST_CHECK(CheckDoublesAreEqual(cylinder.GetVolume(), M_PI * pow(radius, 2) * height));
-    BOOST_CHECK(CheckDoublesAreEqual(cylinder.GetWeight(), cylinder.GetDensity() * cylinder.GetVolume()));
+    BOOST_CHECK(CheckDoublesAreEqual(cylinder.GetMass(), cylinder.GetDensity() * cylinder.GetVolume()));
 }
 
 BOOST_AUTO_TEST_CASE(InvalidCylinderDoesntCreated)
@@ -44,9 +44,12 @@ BOOST_AUTO_TEST_CASE(InvalidCylinderDoesntCreated)
 BOOST_AUTO_TEST_CASE(CylinderStringRepresentation)
 {
     ostringstream strm;
-    strm << "-- Cylinder --\n" << "Volume: " << cylinder.GetVolume() << endl <<
+    strm << "-- Cylinder --" << endl <<
+        "Radius: " << cylinder.GetRadius() << endl <<
+        "Height: " << cylinder.GetHeight() << endl <<
+        "Volume: " << cylinder.GetVolume() << endl <<
         "Density: " << cylinder.GetDensity() << endl <<
-        "Weight: " << cylinder.GetWeight() << endl;
+        "Mass: " << cylinder.GetMass() << endl;
 
     BOOST_CHECK(cylinder.ToString() == strm.str());
 }

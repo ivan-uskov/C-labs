@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(NewCone)
 
     BOOST_CHECK(CheckDoublesAreEqual(cone.GetDensity(), density));
     BOOST_CHECK(CheckDoublesAreEqual(cone.GetVolume(), (1.0 / 3.0) * M_PI * pow(radius, 2) * height));
-    BOOST_CHECK(CheckDoublesAreEqual(cone.GetWeight(), cone.GetDensity() * cone.GetVolume()));
+    BOOST_CHECK(CheckDoublesAreEqual(cone.GetMass(), cone.GetDensity() * cone.GetVolume()));
 }
 
 BOOST_AUTO_TEST_CASE(InvalidConeDoesntCreated)
@@ -44,9 +44,12 @@ BOOST_AUTO_TEST_CASE(InvalidConeDoesntCreated)
 BOOST_AUTO_TEST_CASE(ConeStringRepresentation)
 {
     ostringstream strm;
-    strm << "-- Cone --\n" << "Volume: " << cone.GetVolume() << endl <<
+    strm << "-- Cone --" << endl <<
+        "Radius: " << cone.GetRadius() << endl <<
+        "Height: " << cone.GetHeight() << endl <<
+        "Volume: " << cone.GetVolume() << endl <<
         "Density: " << cone.GetDensity() << endl <<
-        "Weight: " << cone.GetWeight() << endl;
+        "Mass: " << cone.GetMass() << endl;
 
     BOOST_CHECK(cone.ToString() == strm.str());
 }

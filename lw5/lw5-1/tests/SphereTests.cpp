@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(NewSphere)
 
     BOOST_CHECK(CheckDoublesAreEqual(sphere.GetDensity(), density));
     BOOST_CHECK(CheckDoublesAreEqual(sphere.GetVolume(), (1.0 / 3.0) * M_PI * pow(radius, 3)));
-    BOOST_CHECK(CheckDoublesAreEqual(sphere.GetWeight(), sphere.GetDensity() * sphere.GetVolume()));
+    BOOST_CHECK(CheckDoublesAreEqual(sphere.GetMass(), sphere.GetDensity() * sphere.GetVolume()));
 }
 
 BOOST_AUTO_TEST_CASE(InvalidSphereDoesntCreated)
@@ -37,9 +37,11 @@ BOOST_AUTO_TEST_CASE(InvalidSphereDoesntCreated)
 BOOST_AUTO_TEST_CASE(SphereStringRepresentation)
 {
     ostringstream strm;
-    strm << "-- Sphere --\n" << "Volume: " << sphere.GetVolume() << endl <<
+    strm << "-- Sphere --" << endl <<
+        "Radius: " << sphere.GetRadius() << endl <<
+        "Volume: " << sphere.GetVolume() << endl <<
         "Density: " << sphere.GetDensity() << endl <<
-        "Weight: " << sphere.GetWeight() << endl;
+        "Mass: " << sphere.GetMass() << endl;
 
     BOOST_CHECK(sphere.ToString() == strm.str());
 }

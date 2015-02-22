@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Cone.h"
 
+using namespace std;
+
 CCone::CCone(double radius, double height, double density)
     : CSimplexBodyImpl(density)
     , m_radius(radius)
@@ -29,5 +31,11 @@ double CCone::GetHeight()const
 
 std::string CCone::ToString()const
 {
-    return std::string("-- Cone --\n") + CSimplexBodyImpl::ToString();
+    ostringstream ostrm;
+    ostrm << "-- Cone --" << endl <<
+        "Radius: " << m_radius << endl <<
+        "Height: " << m_height << endl <<
+        CSimplexBodyImpl::ToString();
+
+    return ostrm.str();
 }

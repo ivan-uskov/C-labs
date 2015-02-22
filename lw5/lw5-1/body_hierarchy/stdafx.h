@@ -14,6 +14,7 @@
 #include <exception>
 #include <stdexcept>
 #include <memory>
+#include <numeric>
 
 #define _USE_MATH_DEFINES
 #include <math.h>

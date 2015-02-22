@@ -83,6 +83,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\body_hierarchy\Body.h" />
+    <ClInclude Include="..\body_hierarchy\BodyUtils.h" />
+    <ClInclude Include="..\body_hierarchy\Compound.h" />
     <ClInclude Include="..\body_hierarchy\Cone.h" />
     <ClInclude Include="..\body_hierarchy\Cylinder.h" />
     <ClInclude Include="..\body_hierarchy\Parallelepiped.h" />
@@ -93,11 +95,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\body_hierarchy\Body.cpp" />
+    <ClCompile Include="..\body_hierarchy\BodyUtils.cpp" />
+    <ClCompile Include="..\body_hierarchy\Compound.cpp" />
     <ClCompile Include="..\body_hierarchy\Cone.cpp" />
     <ClCompile Include="..\body_hierarchy\Cylinder.cpp" />
     <ClCompile Include="..\body_hierarchy\Parallelepiped.cpp" />
     <ClCompile Include="..\body_hierarchy\SimplexBodyImpl.cpp" />
     <ClCompile Include="..\body_hierarchy\Sphere.cpp" />
+    <ClCompile Include="CompoundTests.cpp" />
     <ClCompile Include="ConeTests.cpp" />
     <ClCompile Include="CylinderTests.cpp" />
     <ClCompile Include="ParallelepipedTests.cpp" />

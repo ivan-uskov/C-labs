@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Cylinder.h"
 
+using namespace std;
 
 CCylinder::CCylinder(double radius, double height, double density)
     : CSimplexBodyImpl(density)
@@ -30,5 +31,11 @@ double CCylinder::GetHeight()const
 
 std::string CCylinder::ToString()const
 {
-    return std::string("-- Cylinder --\n") + CSimplexBodyImpl::ToString();
+    ostringstream ostrm;
+    ostrm << "-- Cylinder --" << endl <<
+        "Radius: " << m_radius << endl <<
+        "Height: " << m_height << endl <<
+        CSimplexBodyImpl::ToString();
+
+    return ostrm.str();
 }

@@ -39,6 +39,12 @@
     <ClInclude Include="..\body_hierarchy\Cylinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\body_hierarchy\Compound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\body_hierarchy\BodyUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -75,6 +81,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\body_hierarchy\Cylinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CompoundTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\body_hierarchy\Compound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\body_hierarchy\BodyUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

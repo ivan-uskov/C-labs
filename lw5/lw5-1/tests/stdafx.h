@@ -11,6 +11,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <numeric>
 
 #define _USE_MATH_DEFINES
 #include <math.h>

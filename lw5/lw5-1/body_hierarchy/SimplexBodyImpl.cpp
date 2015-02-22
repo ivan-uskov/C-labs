@@ -19,7 +19,7 @@ CSimplexBodyImpl::~CSimplexBodyImpl()
 
 /* public */
 
-double CSimplexBodyImpl::GetWeight()const
+double CSimplexBodyImpl::GetMass()const
 {
     return GetVolume() * m_density;
 }
@@ -34,7 +34,7 @@ std::string CSimplexBodyImpl::ToString()const
     ostringstream strm;
     strm << "Volume: " << GetVolume() << endl <<
         "Density: " << m_density << endl <<
-        "Weight: " << GetWeight() << endl;
+        "Mass: " << GetMass() << endl;
 
     return strm.str();
 

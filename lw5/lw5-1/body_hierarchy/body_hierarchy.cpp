@@ -92,19 +92,19 @@ CBodyContainer ReadShapes()
     return shapes;
 }
 
-CBody const& GetShapeWithMaxWeight(CBodyContainer const& shapes)
+CBody const* GetShapeWithMaxMass(CBodyContainer const& shapes)
 {
     CBody const* pMaxBody = nullptr;
     
     for_each(shapes.begin(), shapes.end(), [&pMaxBody](shared_ptr<CBody> const& pShape)
     {
-        if (pMaxBody == nullptr || pMaxBody->GetWeight() < pShape->GetWeight())
+        if (pMaxBody == nullptr || pMaxBody->GetMass() < pShape->GetMass())
         {
             pMaxBody = pShape.get();
         }
     });
 
-    return *pMaxBody;
+    return pMaxBody;
 }
 
 
@@ -114,10 +114,10 @@ double GetWeightInWater(CBody const& shape)
     static const double WATER_DENSITY = 1000;
     static const double GRAVITY       = 9.8;
 
-    return GRAVITY * (shape.GetWeight() - WATER_DENSITY * shape.GetVolume());
+    return GRAVITY * (shape.GetMass() - WATER_DENSITY * shape.GetVolume());
 }
 
-CBody const& GetShapeWithMinWeightInWater(CBodyContainer const& shapes)
+CBody const* GetShapeWithMinWeightInWater(CBodyContainer const& shapes)
 {
     CBody const* pMinBody = nullptr;
 
@@ -129,7 +129,7 @@ CBody const& GetShapeWithMinWeightInWater(CBodyContainer const& shapes)
         }
     });
 
-    return *pMinBody;
+    return pMinBody;
 }
 
 int main(int argc, char* argv[])
@@ -137,12 +137,21 @@ int main(int argc, char* argv[])
     cout << "Enter shape name with constructor arguments!" << endl;
 
     auto shapes = ReadShapes();
+    auto shapeWithMinMass = GetShapeWithMaxMass(shapes);
+    auto shapeWithMinWeightInWater = GetShapeWithMinWeightInWater(shapes);
 
-    cout << "Shape with maximal weight:" << endl;
-    cout << GetShapeWithMaxWeight(shapes).ToString();
+    if (shapeWithMinMass != nullptr && shapeWithMinWeightInWater != nullptr)
+    {
+        cout << "Shape with maximal weight:" << endl;
+        cout << shapeWithMinMass->ToString() << endl;
 
-    cout << "Shape with minimal weight in water:" << endl;
-    cout << GetShapeWithMinWeightInWater(shapes).ToString();
+        cout << "Shape with minimal weight in water:" << endl;
+        cout << shapeWithMinWeightInWater->ToString() << endl;
+    }
+    else
+    {
+        cout << "Shapes empty!" << endl;
+    }
 
     cout << "Bye!" << endl;
 

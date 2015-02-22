@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(NewParallelepiped)
 
     BOOST_CHECK(CheckDoublesAreEqual(parral.GetDensity(), density));
     BOOST_CHECK(CheckDoublesAreEqual(parral.GetVolume(), width * height * depth));
-    BOOST_CHECK(CheckDoublesAreEqual(parral.GetWeight(), parral.GetDensity() * parral.GetVolume()));
+    BOOST_CHECK(CheckDoublesAreEqual(parral.GetMass(), parral.GetDensity() * parral.GetVolume()));
 }
 
 BOOST_AUTO_TEST_CASE(InvalidParallelepipedDoesntCreated)
@@ -48,9 +48,13 @@ BOOST_AUTO_TEST_CASE(InvalidParallelepipedDoesntCreated)
 BOOST_AUTO_TEST_CASE(ParallelepipedStringRepresentation)
 {
     ostringstream strm;
-    strm << "-- Parallelepiped --\n" << "Volume: " << parral.GetVolume() << endl <<
+    strm << "-- Parallelepiped --" << endl <<
+        "Width: " << parral.GetWidth() << endl <<
+        "Height: " << parral.GetHeight() << endl <<
+        "Depth: " << parral.GetDepth() << endl <<
+        "Volume: " << parral.GetVolume() << endl <<
         "Density: " << parral.GetDensity() << endl <<
-        "Weight: " << parral.GetWeight() << endl;
+        "Mass: " << parral.GetMass() << endl;
 
     BOOST_CHECK(parral.ToString() == strm.str());
 }

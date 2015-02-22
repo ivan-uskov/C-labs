@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Sphere.h"
 
+using namespace std;
 
 CSphere::CSphere(double radius, double density)
     : CSimplexBodyImpl(density)
@@ -26,5 +27,10 @@ double CSphere::GetRadius()const
 
 std::string CSphere::ToString()const
 {
-    return std::string("-- Sphere --\n") + CSimplexBodyImpl::ToString();
+    ostringstream ostrm;
+    ostrm << "-- Sphere --" << endl <<
+        "Radius: " << m_radius << endl <<
+        CSimplexBodyImpl::ToString();
+
+    return ostrm.str();
 }

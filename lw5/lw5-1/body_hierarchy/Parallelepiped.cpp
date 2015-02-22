@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Parallelepiped.h"
 
+using namespace std;
 
 CParallelepiped::CParallelepiped(double width, double height, double depth, double density)
     : CSimplexBodyImpl(density)
@@ -38,5 +39,12 @@ double CParallelepiped::GetDepth()const
 
 std::string CParallelepiped::ToString()const
 {
-    return std::string("-- Parallelepiped --\n") + CSimplexBodyImpl::ToString();
+    ostringstream ostrm;
+    ostrm << "-- Parallelepiped --" << endl <<
+        "Width: " << m_width << endl <<
+        "Height: " << m_height << endl <<
+        "Depth: " << m_depth << endl <<
+        CSimplexBodyImpl::ToString();
+
+    return ostrm.str();
 }
