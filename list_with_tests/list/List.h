@@ -83,7 +83,7 @@ public:
 
         pointer operator -> () const
         {
-            return **mCurrentNode;
+            return std::addressof(**this);
         }
 
     private:
@@ -391,9 +391,9 @@ typename List<Value>::iterator List<Value>::emplace(const_iterator position, Arg
 
 template <typename Value>
 template <class... Args>
-typename List<Value>::iterator List<Value>::emplace_back(Args&&... args)
+typename List<Value>::iterator List<Value>::emplace_back(Args &&... args)
 {
-    emplace(cend, std::forward<Args>(args)...);
+    emplace(cend(), std::forward<Args>(args)...);
 }
 
 template <typename Value>
