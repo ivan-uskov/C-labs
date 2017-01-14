@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="list">
+      <UniqueIdentifier>{d429d627-a302-409c-9bcc-60d2a532672b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{6272c8a5-4d43-4b55-86ea-7b7fc369d6e2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="List.h">
+      <Filter>list</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>system</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
