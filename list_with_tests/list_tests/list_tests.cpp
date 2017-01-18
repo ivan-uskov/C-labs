@@ -183,4 +183,16 @@ BOOST_FIXTURE_TEST_SUITE(CommonFunctionsTests, FixtureWithMyList)
         BOOST_CHECK_EQUAL(myInts.size(), myIntsOldSize + 1);
     }
 
+    BOOST_AUTO_TEST_CASE(EndIteratorIncrementThrowsLogicError)
+    {
+        BOOST_CHECK_THROW(++myInts.end(), std::logic_error);
+        BOOST_CHECK_THROW(myInts.end()++, std::logic_error);
+    }
+
+    BOOST_AUTO_TEST_CASE(BeginIteratorDecrementThrowsLogicError)
+    {
+        BOOST_CHECK_THROW(--myInts.begin(), std::logic_error);
+        BOOST_CHECK_THROW(myInts.begin()--, std::logic_error);
+    }
+
 BOOST_AUTO_TEST_SUITE_END()

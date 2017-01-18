@@ -19,7 +19,7 @@ namespace
 }
 
 template <typename Value>
-class List : public std::enable_shared_from_this<List<Value>>
+class List
 {
     template <typename Value>
     struct ListNode;
@@ -211,6 +211,10 @@ typename List<Value>::Iterator<ItValue> & List<Value>::Iterator<ItValue>::operat
         mPrevNode = mCurrentNode;
         mCurrentNode = mCurrentNode->next;
     }
+    else
+    {
+        throw std::logic_error("Out of range");
+    }
 
     return *this;
 }
@@ -230,6 +234,11 @@ typename List<Value>::Iterator<ItValue> & List<Value>::Iterator<ItValue>::operat
 {
     if (mCurrentNode)
     {
+        if (!mCurrentNode->prev)
+        {
+            throw std::logic_error("Out of range");
+        }
+
         mCurrentNode = mCurrentNode->prev;
         mPrevNode = mCurrentNode;
     }
