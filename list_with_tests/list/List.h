@@ -402,7 +402,7 @@ template <typename Value>
 template <class... Args>
 typename List<Value>::iterator List<Value>::emplace_back(Args &&... args)
 {
-    emplace(cend(), std::forward<Args>(args)...);
+    return emplace(cend(), std::forward<Args>(args)...);
 }
 
 template <typename Value>

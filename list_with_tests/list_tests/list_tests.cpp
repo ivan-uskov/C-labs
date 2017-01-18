@@ -195,4 +195,16 @@ BOOST_FIXTURE_TEST_SUITE(CommonFunctionsTests, FixtureWithMyList)
         BOOST_CHECK_THROW(myInts.begin()--, std::logic_error);
     }
 
+    BOOST_AUTO_TEST_CASE(CheckEndIteratorAlwaysEndIterator)
+    {
+        List<int> list{ 1, 2, 3, 4, 5 };
+        auto i = list.end();
+        --i;
+        BOOST_CHECK_EQUAL(*i, 5);
+        ++i;
+        list.push_back(42);
+        --i;
+        BOOST_CHECK_EQUAL(*i, 42);
+    }
+
 BOOST_AUTO_TEST_SUITE_END()
