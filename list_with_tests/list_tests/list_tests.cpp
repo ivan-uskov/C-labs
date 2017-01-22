@@ -1,210 +1,238 @@
 #include "stdafx.h"
-#include "../list/List.h"
+#include "../list/MyList.h"
 
 using namespace std;
 using namespace std::placeholders;
 
-template <typename T1, typename T2, typename T3>
-void compare(T1 stdIt, T2 myIt, T3 myItEnd)
+namespace
 {
-    for (; myIt != myItEnd; ++myIt, ++stdIt)
+    struct EmptyListFixure
     {
-        BOOST_CHECK_EQUAL(*myIt, *stdIt);
+        CMyList<int> list;
+        CMyList<int> const & constList = list;
+    };
+
+    template <typename T>
+    bool operator == (const CMyList<T> & lhs, const std::list<T> & rhs)
+    {
+        return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
-};
-
-template <typename T>
-void verifyEqual(const list<T> & stdList, const List<T> & list)
-{
-    BOOST_CHECK_EQUAL(stdList.size(), list.size());
-
-    compare(stdList.begin(), list.begin(), list.end());
-    compare(stdList.rbegin(), list.rbegin(), list.rend());
 }
 
-struct FixtureWithMyList
+BOOST_AUTO_TEST_SUITE(default_contructor)
+
+BOOST_AUTO_TEST_CASE(default_constructor_creates_empty_list_with_size_0)
 {
-    List<int> myInts = { 5, 6, 14, 9, 10 };
-    const List<int> & myIntsConstRef = myInts;
+    auto list = CMyList<int>();
+    BOOST_CHECK(list.IsEmpty());
+    BOOST_CHECK_EQUAL(list.GetSize(), 0);
+}
+
+struct ThrowErrorInDefaultConstructor
+{
+    ThrowErrorInDefaultConstructor()
+    {
+        throw runtime_error("from default constructor");
+    }
 };
 
-struct FixtureWithMyListAndStlList : public FixtureWithMyList
+BOOST_AUTO_TEST_CASE(default_constructor_does_not_create_empty_values)
 {
-    std::list<int> stdInts = { 5, 6, 14, 9, 10 };
+    BOOST_CHECK_NO_THROW(CMyList<ThrowErrorInDefaultConstructor>());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(empty_list_iterator, EmptyListFixure)
+
+BOOST_AUTO_TEST_CASE(cbegin_equals_to_begin)
+{
+    BOOST_CHECK(list.begin() == constList.begin());
+    BOOST_CHECK(list.begin() == list.cbegin());
+}
+
+BOOST_AUTO_TEST_CASE(cend_equals_to_end)
+{
+    BOOST_CHECK(list.end() == constList.end());
+    BOOST_CHECK(list.end() == list.cend());
+}
+
+BOOST_AUTO_TEST_CASE(begin_on_empty_list_equals_end_iterator)
+{
+    BOOST_CHECK(list.begin() == list.end());
+    BOOST_CHECK(constList.begin() == constList.end());
+    BOOST_CHECK(list.cbegin() == list.cend());
+
+    BOOST_CHECK(list.rbegin() == list.rend());
+    BOOST_CHECK(constList.rbegin() == constList.rend());
+    BOOST_CHECK(list.crbegin() == list.crend());
+}
+
+BOOST_AUTO_TEST_CASE(decrement_begin_iterator_throws_logic_error)
+{
+    auto CheckThrowLogicError = [](auto && it) {
+        BOOST_CHECK_THROW(--it, logic_error);
+        BOOST_CHECK_THROW(it--, logic_error);
+    };
+
+    CheckThrowLogicError(list.begin());
+    CheckThrowLogicError(list.cbegin());
+    CheckThrowLogicError(constList.begin());
+    CheckThrowLogicError(list.rbegin());
+    CheckThrowLogicError(list.crbegin());
+    CheckThrowLogicError(constList.rbegin());
+}
+
+BOOST_AUTO_TEST_CASE(increment_begin_iterator_throws_logic_error)
+{
+    auto CheckThrowLogicError = [](auto && it) {
+        BOOST_CHECK_THROW(++it, logic_error);
+        BOOST_CHECK_THROW(it++, logic_error);
+    };
+
+    CheckThrowLogicError(list.end());
+    CheckThrowLogicError(list.cend());
+    CheckThrowLogicError(constList.end());
+    CheckThrowLogicError(list.rend());
+    CheckThrowLogicError(list.crend());
+    CheckThrowLogicError(constList.rend());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(emplace_to_list, EmptyListFixure)
+
+BOOST_AUTO_TEST_CASE(emplace_to_list_increase_size_by_1)
+{
+    auto it = list.Emplace(list.cend(), 42);
+    BOOST_CHECK_EQUAL(list.GetSize(), 1);
+
+    list.Emplace(it, 43);
+    BOOST_CHECK_EQUAL(list.GetSize(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(emplace_to_list_returns_iterator_to_inserted_element)
+{
+    auto it = list.Emplace(list.cend(), 42);
+    BOOST_CHECK_EQUAL(*it, 42);
+
+    it = list.Emplace(it, 2);
+    BOOST_CHECK_EQUAL(*it, 2);
+}
+
+BOOST_AUTO_TEST_CASE(emplace_to_end_creates_elements_coherently)
+{
+    list.Emplace(list.cend(), 1);
+    list.Emplace(list.cend(), 2);
+    list.Emplace(list.cend(), 3);
+
+    BOOST_CHECK((list == std::list<int>{1, 2, 3}));
+}
+
+BOOST_AUTO_TEST_CASE(emplace_to_begin_creates_elements_reversed_after_first)
+{
+    list.Emplace(list.cbegin(), 1);
+    list.Emplace(list.cbegin(), 2);
+    list.Emplace(list.cbegin(), 3);
+    list.Emplace(list.cbegin(), 4);
+
+    BOOST_CHECK((list == std::list<int>{1, 4, 3, 2}));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+struct ListWithSeveralIntsFixture : public EmptyListFixure
+{
+    ListWithSeveralIntsFixture()
+    {
+        list.Emplace(list.cend(), 1);
+        list.Emplace(list.cend(), 2);
+        list.Emplace(list.cend(), 3);
+        list.Emplace(list.cend(), 4);
+    }
+
+    const size_t listInitialSize = 4;
 };
 
-BOOST_FIXTURE_TEST_SUITE(ListTests, FixtureWithMyListAndStlList)
+BOOST_FIXTURE_TEST_SUITE(list_iterator, ListWithSeveralIntsFixture)
 
-    BOOST_AUTO_TEST_CASE(TestDefaultConstruct)
-    {
-        BOOST_CHECK_NO_THROW(List<int>());
-    }
+BOOST_AUTO_TEST_CASE(begin_iterator_refers_to_first_element)
+{
+    BOOST_CHECK_EQUAL(*list.begin(), 1);
+    BOOST_CHECK_EQUAL(*list.cbegin(), 1);
+    BOOST_CHECK_EQUAL(*constList.begin(), 1);
+}
 
-    BOOST_AUTO_TEST_CASE(TestConstructFromIterators)
-    {
-        auto list = List<int>(stdInts.begin(), stdInts.end());
+BOOST_AUTO_TEST_CASE(end_iterator_refers_to_node_after_last_element)
+{
+    BOOST_CHECK_EQUAL(*(--list.end()), 4);
+    BOOST_CHECK_EQUAL(*(--list.cend()), 4);
+    BOOST_CHECK_EQUAL(*(--constList.end()), 4);
+}
 
-        verifyEqual(stdInts, myInts);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestConstructFromInitializerList)
-    {
-        verifyEqual(stdInts, myInts);
-    }
-
-BOOST_AUTO_TEST_SUITE_END()
-
-BOOST_FIXTURE_TEST_SUITE(IteratorsTests, FixtureWithMyList)
-
-    BOOST_AUTO_TEST_CASE(TestBeginDereference)
-    {
-        BOOST_CHECK_EQUAL(*myInts.begin(), 5);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestEnd)
-    {
-        List<int> list = { 5, 6 };
-        auto end = list.end();
-        BOOST_CHECK_EQUAL(*(--end), 6);
-    }
+BOOST_AUTO_TEST_CASE(old_end_iterator_stay_end_after_emplace_back)
+{
+    auto it = list.end();
+    --it;
+    BOOST_CHECK_EQUAL(*it, 4);
+    ++it;
+    list.Emplace(list.cend(), 42);
+    --it;
+    BOOST_CHECK_EQUAL(*it, 42);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(InsertToMiddleTests, FixtureWithMyListAndStlList)
+BOOST_FIXTURE_TEST_SUITE(erase_from_list, ListWithSeveralIntsFixture)
 
-    BOOST_AUTO_TEST_CASE(TestCopyOneInsert)
-    {
-        myInts.insert(++myInts.cbegin(), 7);
-        BOOST_CHECK((myInts == List<int>{ 5, 6, 7, 14, 9, 10 }));
-    }
+BOOST_AUTO_TEST_CASE(erase_element_decrease_size_by_1)
+{
+    list.Erase(list.begin());
+    BOOST_CHECK_EQUAL(list.GetSize(), listInitialSize - 1);
 
-    BOOST_AUTO_TEST_CASE(TestCopyManyInsert)
-    {
-        myInts.insert(++(++myInts.cbegin()), 5, 7);
-        BOOST_CHECK((myInts == List<int>{ 5, 6, 14, 7, 7, 7, 7, 7, 9, 10 }));
-    }
+    list.Erase(list.begin());
+    BOOST_CHECK_EQUAL(list.GetSize(), listInitialSize - 2);
+}
 
-    BOOST_AUTO_TEST_CASE(TestRangeInsert)
-    {
-        myInts.insert(++(++myInts.cbegin()), stdInts.begin(), stdInts.end());
-        BOOST_CHECK((myInts == List<int>{ 5, 6, 14, 5, 6, 14, 9, 10, 9, 10 }));
-    }
+BOOST_AUTO_TEST_CASE(erase_begin_element_remove_first_element)
+{
+    list.Erase(list.begin());
+    BOOST_CHECK((list == std::list<int>{2, 3, 4}));
+}
 
-    BOOST_AUTO_TEST_CASE(TestMoveInsert)
-    {
-        List<unique_ptr<int>> list;
-        BOOST_CHECK_NO_THROW(list.emplace(list.cend(), make_unique<int>(5)));
-        BOOST_CHECK_EQUAL(list.size(), 1);
-        BOOST_CHECK_EQUAL(**list.begin(), 5);
-    }
+BOOST_AUTO_TEST_CASE(erase_pre_end_element_remove_one_element_from_back)
+{
+    list.Erase(--list.end());
+    BOOST_CHECK((list == std::list<int>{1, 2, 3}));
+}
 
-BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_CASE(erase_range_of_element_from_begin_to_middle)
+{
+    list.Erase(list.begin(), --(--list.end()));
+    BOOST_CHECK((list == std::list<int>{3, 4}));
+    BOOST_CHECK_EQUAL(list.GetSize(), 2);
+}
 
-BOOST_FIXTURE_TEST_SUITE(CommonFunctionsTests, FixtureWithMyList)
+BOOST_AUTO_TEST_CASE(erase_range_of_element_from_middle_to_end)
+{
+    list.Erase(++(++list.begin()), list.end());
+    BOOST_CHECK((list == std::list<int>{1, 2}));
+    BOOST_CHECK_EQUAL(list.GetSize(), 2);
+}
 
-    BOOST_AUTO_TEST_CASE(TestClear)
-    {
-        myInts.clear();
-        BOOST_CHECK_EQUAL(myInts.size(), 0);
-        BOOST_CHECK(myInts == List<int>());
-    }
+BOOST_AUTO_TEST_CASE(erase_range_of_element_in_middle)
+{
+    list.Erase(++list.begin(), --list.end());
+    BOOST_CHECK((list == std::list<int>{1, 4}));
+    BOOST_CHECK_EQUAL(list.GetSize(), 2);
+}
 
-    BOOST_AUTO_TEST_CASE(TestFrontElement)
-    {
-        BOOST_CHECK_EQUAL(myInts.front(), 5);
-        BOOST_CHECK_EQUAL(myIntsConstRef.front(), 5);
-        myInts.clear();
-        BOOST_CHECK_THROW(myInts.front(), std::logic_error);
-        BOOST_CHECK_THROW(myIntsConstRef.front(), std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestBackElement)
-    {
-        BOOST_CHECK_EQUAL(myInts.back(), 10);
-        BOOST_CHECK_EQUAL(myIntsConstRef.back(), 10);
-        myInts.clear();
-        BOOST_CHECK_THROW(myInts.back(), std::logic_error);
-        BOOST_CHECK_THROW(myIntsConstRef.back(), std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestSwap)
-    {
-        auto anotherInts = List<int>{ 4, 3, 2, 1 };
-        BOOST_CHECK_NO_THROW(anotherInts.swap(myInts));
-        BOOST_CHECK((myInts == List<int>{ 4, 3, 2, 1 }));
-        BOOST_CHECK((anotherInts == List<int>{ 5, 6, 14, 9, 10 }));
-    }
-
-    BOOST_AUTO_TEST_CASE(TestPopBack)
-    {
-        auto ints = List<int>{ 4, 3, 2, 1 };
-        BOOST_CHECK_EQUAL(ints.size(), 4);
-        BOOST_CHECK_EQUAL(ints.back(), 1);
-        BOOST_CHECK_NO_THROW(ints.pop_back());
-        BOOST_CHECK_EQUAL(ints.size(), 3);
-        BOOST_CHECK_EQUAL(ints.back(), 2);
-        BOOST_CHECK_NO_THROW(ints.pop_back());
-        BOOST_CHECK_EQUAL(ints.size(), 2);
-        BOOST_CHECK_EQUAL(ints.back(), 3);
-        BOOST_CHECK_NO_THROW(ints.pop_back());
-        BOOST_CHECK_EQUAL(ints.size(), 1);
-        BOOST_CHECK_EQUAL(ints.back(), 4);
-        BOOST_CHECK_NO_THROW(ints.pop_back());
-        BOOST_CHECK_EQUAL(ints.size(), 0);
-        BOOST_CHECK_THROW(ints.back(), std::logic_error);
-        BOOST_CHECK_THROW(ints.pop_back(), std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestPopFront)
-    {
-        auto ints = List<int>{ 4, 3, 2, 1 };
-        BOOST_CHECK_EQUAL(ints.size(), 4);
-        BOOST_CHECK_EQUAL(ints.front(), 4);
-        BOOST_CHECK_NO_THROW(ints.pop_front());
-        BOOST_CHECK_EQUAL(ints.size(), 3);
-        BOOST_CHECK_EQUAL(ints.front(), 3);
-        BOOST_CHECK_NO_THROW(ints.pop_front());
-        BOOST_CHECK_EQUAL(ints.size(), 2);
-        BOOST_CHECK_EQUAL(ints.front(), 2);
-        BOOST_CHECK_NO_THROW(ints.pop_front());
-        BOOST_CHECK_EQUAL(ints.size(), 1);
-        BOOST_CHECK_EQUAL(ints.front(), 1);
-        BOOST_CHECK_NO_THROW(ints.pop_front());
-        BOOST_CHECK_EQUAL(ints.size(), 0);
-        BOOST_CHECK_THROW(ints.front(), std::logic_error);
-        BOOST_CHECK_THROW(ints.pop_front(), std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(TestEmplaceFront)
-    {
-        auto myIntsOldSize = myInts.size();
-        myInts.emplace_front(2);
-        BOOST_CHECK_EQUAL(myInts.front(), 2);
-        BOOST_CHECK_EQUAL(myInts.size(), myIntsOldSize + 1);
-    }
-
-    BOOST_AUTO_TEST_CASE(EndIteratorIncrementThrowsLogicError)
-    {
-        BOOST_CHECK_THROW(++myInts.end(), std::logic_error);
-        BOOST_CHECK_THROW(myInts.end()++, std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(BeginIteratorDecrementThrowsLogicError)
-    {
-        BOOST_CHECK_THROW(--myInts.begin(), std::logic_error);
-        BOOST_CHECK_THROW(myInts.begin()--, std::logic_error);
-    }
-
-    BOOST_AUTO_TEST_CASE(CheckEndIteratorAlwaysEndIterator)
-    {
-        List<int> list{ 1, 2, 3, 4, 5 };
-        auto i = list.end();
-        --i;
-        BOOST_CHECK_EQUAL(*i, 5);
-        ++i;
-        list.push_back(42);
-        --i;
-        BOOST_CHECK_EQUAL(*i, 42);
-    }
+BOOST_AUTO_TEST_CASE(clear_remove_all_elements)
+{
+    list.Clear();
+    BOOST_CHECK(list.IsEmpty());
+    BOOST_CHECK_EQUAL(list.GetSize(), 0);
+    BOOST_CHECK((list.begin() == list.end()));
+}
 
 BOOST_AUTO_TEST_SUITE_END()

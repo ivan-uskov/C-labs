@@ -9,14 +9,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="List.h">
-      <Filter>list</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="MyList.h">
+      <Filter>list</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
