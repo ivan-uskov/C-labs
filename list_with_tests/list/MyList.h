@@ -45,18 +45,15 @@ class CMyList
 public:
     CMyList();
 /*
+    CMyList(size_t n);
     CMyList(size_t n, const Value & value);
 
 */
     template<typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     CMyList(InputIterator it, InputIterator last);
     CMyList(std::initializer_list<Value> il);
-
-/*
     CMyList(const CMyList & rhs);
     CMyList(CMyList && rhs);
-    
-*/
 
     ~CMyList();
 
@@ -120,15 +117,14 @@ public:
 
     void Clear();
 
-/*
     void Swap(CMyList & rhs) noexcept;
 
+/*
     void Resize(size_t n);
     void Resize(size_t n, const Value & value);
 */
 
 public:
-
 /*
     CMyList & operator = (const CMyList & rhs);
     CMyList & operator = (CMyList && rhs);
@@ -150,7 +146,7 @@ public:
     Iterator Insert(ConstIterator position, size_t n, const Value & value);
 */
     template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
-    Iterator Insert(ConstIterator position, InputIterator first, InputIterator last);
+    Iterator Insert(const ConstIterator & position, InputIterator first, const InputIterator & last);
 
 /*
     Iterator Insert(ConstIterator position, Value && val);
@@ -197,12 +193,10 @@ private:
 
 // ---------------------- Relational operators ----------------------
 
-//TODO: test
-
 template <typename Value>
 bool operator == (const CMyList<Value> & lhs, const CMyList<Value> & rhs)
 {
-    return (lhs.GetSize() == rhs.GetSize()) && std::equal(lhs.begin, lhs.end(), rhs.begin(), rhs.end());
+    return (lhs.GetSize() == rhs.GetSize()) && std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename Value>
@@ -237,27 +231,29 @@ typename CMyList<Value>::Iterator CMyList<Value>::EmplaceFront(Args &&... args)
 
 template <typename Value>
 template <typename InputIterator, typename>
-typename CMyList<Value>::Iterator CMyList<Value>::Insert(ConstIterator position, InputIterator it, InputIterator last)
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & position, InputIterator it, const InputIterator & last)
 {
-    size_t elementsAdded = 0;
+    ThrowLogicErrorIfForeignIterator(position);
+    size_t addedCount = 0;
+    auto node = position.m_node->prev;
     try
     {
         while (it != last)
         {
             Emplace(position, *(it++));
-            ++elementsAdded;
+            ++addedCount;
         }
     }
     catch (...)
     {
-        while (elementsAdded-- > 0)
+        while (addedCount-- > 0)
         {
-            Erase(--position);
+            Erase(CreateIterator<ConstIterator>(position.m_node->prev));
         }
         throw;
     }
 
-    return CreateIterator<Iterator>(position.m_node);
+    return CreateIterator<Iterator>(node->next);
 }
 
 // ---------------------- Erase ----------------------
@@ -299,6 +295,16 @@ void CMyList<Value>::Clear()
     Erase(cbegin(), cend());
 }
 
+// ---------------------- Useful features ----------------------
+
+template <typename Value>
+void CMyList<Value>::Swap(CMyList & rhs) noexcept
+{
+    std::swap(m_size, rhs.m_size);
+    std::swap(m_preBeginNode, rhs.m_preBeginNode);
+    std::swap(m_endNode, rhs.m_endNode);
+}
+
 // ---------------------- About size ----------------------
 
 template <typename Value>
@@ -331,11 +337,20 @@ CMyList<Value>::CMyList(InputIterator it, InputIterator last)
 
 template <typename Value>
 CMyList<Value>::CMyList(std::initializer_list<Value> il)
+    : CMyList(il.begin(), il.end())
+{}
+
+template <typename Value>
+CMyList<Value>::CMyList(const CMyList & rhs)
+    : CMyList(rhs.begin(), rhs.end())
+{}
+
+template <typename Value>
+CMyList<Value>::CMyList(CMyList && rhs)
     : CMyList()
 {
-    Insert(cend(), il.begin(), il.end());
+    Swap(rhs);
 }
-
 
 // ---------------------- Destructor ----------------------
 
