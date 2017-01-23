@@ -71,6 +71,7 @@ public:
 
         operator MyIterator<const IteratorValue> ();
         IteratorValue & operator * () const;
+        // IteratorValue * operator -> () const;
 
         MyIterator & operator ++ ();
         MyIterator operator ++ (int);
@@ -142,25 +143,17 @@ public:
     Iterator PushFront(const Value & val);
     Iterator PushFront(Value && val);
 
-/*
-    Iterator Insert(ConstIterator position, const Value & value);
-    Iterator Insert(ConstIterator position, Value && val);
-    Iterator Insert(ConstIterator position, size_t n, const Value & value);
-*/
-
     template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     Iterator Insert(const ConstIterator & position, InputIterator first, const InputIterator & last);
-    Iterator Insert(ConstIterator position, size_t n, const Value & value);
+    Iterator Insert(const ConstIterator & position, size_t n, const Value & value);
+    Iterator Insert(const ConstIterator & position, const Value & value);
+    Iterator Insert(const ConstIterator & position, Value && value);
+    Iterator Insert(const ConstIterator & position, std::initializer_list<Value> list);
 
     template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     void Assign(InputIterator first, const InputIterator & last);
     void Assign(size_t n, const Value & value);
     void Assign(std::initializer_list<Value> il);
-
-/*
-    Iterator Insert(ConstIterator position, Value && val);
-    Iterator Insert(ConstIterator position, std::initializer_list<Value> list);
-*/
 
     Value & Front();
     const Value & Front() const;
@@ -323,7 +316,7 @@ typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & p
 }
 
 template <typename Value>
-typename CMyList<Value>::Iterator CMyList<Value>::Insert(ConstIterator position, size_t n, const Value & value)
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & position, size_t n, const Value & value)
 {
     auto node = position.m_node->prev;
     while (n-- > 0)
@@ -332,6 +325,24 @@ typename CMyList<Value>::Iterator CMyList<Value>::Insert(ConstIterator position,
     }
 
     return CreateIterator<Iterator>(node->next);
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator  & position, const Value & value)
+{
+    return Emplace(position, value);
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & position, Value && value)
+{
+    return Emplace(position, std::move(value));
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & position, std::initializer_list<Value> il)
+{
+    return Insert(position, il.begin(), il.end());
 }
 
 template <typename Value>

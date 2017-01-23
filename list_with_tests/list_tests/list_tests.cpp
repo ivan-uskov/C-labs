@@ -387,6 +387,36 @@ BOOST_AUTO_TEST_CASE(insert_n_same_value_returns_iterator_to_first_inserted_elem
     BOOST_CHECK((it == myList.begin()));
 }
 
+BOOST_AUTO_TEST_CASE(insert_by_initializer_list_works_like_insert_by_range)
+{
+    CMyList<int> l1, l2;
+    auto it1 = l1.Insert(l1.end(), list.begin(), list.end());
+    auto it2 = l2.Insert(l2.end(), {1, 2, 3, 4});
+
+    BOOST_CHECK((it1 == l1.begin()));
+    BOOST_CHECK((it2 == l2.begin()));
+    BOOST_CHECK((l1 == l2));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(insert_to_list, ListWithSeveralIntsFixture) // ------------------- insert_to_list -------------------
+
+BOOST_AUTO_TEST_CASE(insert_by_lvalue_put_before_specified_position_copy_of_value)
+{
+    auto it = list.Insert(list.cend(), 6);
+    BOOST_CHECK_EQUAL(*it, 6);
+    BOOST_CHECK((list == std::list<int>{1, 2, 3, 4, 6}));
+}
+
+BOOST_AUTO_TEST_CASE(insert_by_rvalue_put_value_before_specified_position)
+{
+    CMyList<CMyList<int>> listOfLists;
+    auto it = listOfLists.Insert(listOfLists.end(), move(list));
+    BOOST_CHECK(list.IsEmpty());
+    BOOST_CHECK((*it == std::list<int>{1, 2, 3, 4}));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(push_to_list, ListWithSeveralIntsFixture) // ------------------- push_to_list -------------------
