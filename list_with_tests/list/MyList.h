@@ -47,12 +47,15 @@ public:
 /*
     CMyList(size_t n, const Value & value);
 
-    template<typename InputIterator, typename = std::enable_if_t<is_iterator<InputIterator>::value>>
+*/
+    template<typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     CMyList(InputIterator it, InputIterator last);
+    CMyList(std::initializer_list<Value> il);
 
+/*
     CMyList(const CMyList & rhs);
     CMyList(CMyList && rhs);
-    CMyList(std::initializer_list<Value> && list);
+    
 */
 
     ~CMyList();
@@ -112,8 +115,8 @@ public:
     size_t GetSize() const noexcept;
     bool IsEmpty() const noexcept;
 
-    Iterator Erase(ConstIterator position);
-    Iterator Erase(ConstIterator first, ConstIterator last);
+    Iterator Erase(const ConstIterator & position);
+    Iterator Erase(ConstIterator first, const ConstIterator & last);
 
     void Clear();
 
@@ -135,21 +138,25 @@ public:
 public:
     template <typename... Args>
     Iterator Emplace(const ConstIterator & position, Args&&... args);
-/*
+
     template <class... Args>
     Iterator EmplaceBack(Args&&... args);
 
     template <class... Args>
-    void EmplaceFront(Args&&... args);
+    Iterator EmplaceFront(Args&&... args);
 
+/*
     Iterator Insert(ConstIterator position, const Value & value);
     Iterator Insert(ConstIterator position, size_t n, const Value & value);
-    template <typename InputIterator, typename = std::enable_if_t<is_iterator<InputIterator>::value>>
+*/
+    template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     Iterator Insert(ConstIterator position, InputIterator first, InputIterator last);
+
+/*
     Iterator Insert(ConstIterator position, Value && val);
     Iterator Insert(ConstIterator position, std::initializer_list<Value> list);
 
-    template <typename InputIterator, typename = std::enable_if_t<is_iterator<InputIterator>::value>>
+    template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     void Assign(InputIterator first, InputIterator last);
     void Assign(size_t n, const Value & value);
     void Assign(std::initializer_list<Value> il);
@@ -170,9 +177,9 @@ public:
     void PopFront();
 */
 private:
-    Iterator InsertAfter(const NodePtr & node, const NodePtr & nodeToBeInserted);
+    Iterator InsertBefore(const NodePtr & node, const NodePtr & nodeToBeInserted);
     template <typename... Args>
-    NodePtr CreateNode(Args&&... args);
+    NodePtr CreateNode(Args &&... args);
 
     template <typename T, typename = std::enable_if_t<IsIterator<T>::value>>
     T CreateIterator(const NodePtr & node);
@@ -180,6 +187,7 @@ private:
     T CreateIterator(const NodePtr & node) const;
 
     void Initialize();
+    void ThrowLogicErrorIfForeignIterator(const ConstIterator & it);
 
 private:
     NodePtr m_preBeginNode = std::make_shared<Node>();
@@ -209,16 +217,55 @@ template <typename Value>
 template <typename... Args>
 typename CMyList<Value>::Iterator CMyList<Value>::Emplace(const ConstIterator & position, Args&&... args)
 {
-    auto cendIt = cend();
-    auto nodeBeforeNew = (position == cendIt ? cendIt.m_node->prev : position.m_node);
-    return InsertAfter(nodeBeforeNew, CreateNode(std::forward<Args>(args)...));
+    ThrowLogicErrorIfForeignIterator(position);
+    return InsertBefore(position.m_node, CreateNode(std::forward<Args>(args)...));
+}
+
+template <typename Value>
+template <class... Args>
+typename CMyList<Value>::Iterator CMyList<Value>::EmplaceBack(Args &&... args)
+{
+    return Emplace(cend(), std::forward<Args>(args)...);
+}
+
+template <typename Value>
+template <class... Args>
+typename CMyList<Value>::Iterator CMyList<Value>::EmplaceFront(Args &&... args)
+{
+    return Emplace(cbegin(), std::forward<Args>(args)...);
+}
+
+template <typename Value>
+template <typename InputIterator, typename>
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(ConstIterator position, InputIterator it, InputIterator last)
+{
+    size_t elementsAdded = 0;
+    try
+    {
+        while (it != last)
+        {
+            Emplace(position, *(it++));
+            ++elementsAdded;
+        }
+    }
+    catch (...)
+    {
+        while (elementsAdded-- > 0)
+        {
+            Erase(--position);
+        }
+        throw;
+    }
+
+    return CreateIterator<Iterator>(position.m_node);
 }
 
 // ---------------------- Erase ----------------------
 
 template <typename Value>
-typename CMyList<Value>::Iterator CMyList<Value>::Erase(ConstIterator position)
+typename CMyList<Value>::Iterator CMyList<Value>::Erase(const ConstIterator & position)
 {
+    ThrowLogicErrorIfForeignIterator(position);
     if (position == cend())
     {
         throw std::logic_error("Erase end iterator");
@@ -233,8 +280,11 @@ typename CMyList<Value>::Iterator CMyList<Value>::Erase(ConstIterator position)
 }
 
 template <typename Value>
-typename CMyList<Value>::Iterator CMyList<Value>::Erase(ConstIterator it, ConstIterator last)
+typename CMyList<Value>::Iterator CMyList<Value>::Erase(ConstIterator it, const ConstIterator & last)
 {
+    ThrowLogicErrorIfForeignIterator(it);
+    ThrowLogicErrorIfForeignIterator(last);
+
     while (it != last)
     {
         Erase(it++);
@@ -270,6 +320,22 @@ CMyList<Value>::CMyList()
 {
     Initialize();
 }
+
+template <typename Value>
+template<typename InputIterator, typename>
+CMyList<Value>::CMyList(InputIterator it, InputIterator last)
+    : CMyList()
+{
+    Insert(cend(), it, last);
+}
+
+template <typename Value>
+CMyList<Value>::CMyList(std::initializer_list<Value> il)
+    : CMyList()
+{
+    Insert(cend(), il.begin(), il.end());
+}
+
 
 // ---------------------- Destructor ----------------------
 
@@ -453,12 +519,12 @@ typename CMyList<Value>::ConstReverseIterator CMyList<Value>::crend() const
 // ---------------------- Helpers ----------------------
 
 template <typename Value>
-typename CMyList<Value>::Iterator CMyList<Value>::InsertAfter(const NodePtr & node, const NodePtr & nodeToBeInserted)
+typename CMyList<Value>::Iterator CMyList<Value>::InsertBefore(const NodePtr & node, const NodePtr & nodeToBeInserted)
 {
-    nodeToBeInserted->next = node->next;
-    nodeToBeInserted->prev = node;
-    node->next->prev = nodeToBeInserted;
-    node->next = nodeToBeInserted;
+    nodeToBeInserted->next = node;
+    nodeToBeInserted->prev = node->prev;
+    node->prev->next = nodeToBeInserted;
+    node->prev = nodeToBeInserted;
 
     ++m_size;
 
@@ -480,6 +546,15 @@ void CMyList<Value>::Initialize()
 {
     m_preBeginNode->next = m_endNode;
     m_endNode->prev = m_preBeginNode;
+}
+
+template <typename Value>
+void CMyList<Value>::ThrowLogicErrorIfForeignIterator(const ConstIterator & it)
+{
+    if (it.m_collection != this)
+    {
+        throw std::logic_error("Passed a foreign iterator");
+    }
 }
 
 template <typename Value>
