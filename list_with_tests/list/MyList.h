@@ -44,11 +44,12 @@ class CMyList
 
 public:
     CMyList();
+
 /*
     CMyList(size_t n);
     CMyList(size_t n, const Value & value);
-
 */
+
     template<typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     CMyList(InputIterator it, InputIterator last);
     CMyList(std::initializer_list<Value> il);
@@ -112,6 +113,9 @@ public:
     size_t GetSize() const noexcept;
     bool IsEmpty() const noexcept;
 
+    void PopBack();
+    void PopFront();
+
     Iterator Erase(const ConstIterator & position);
     Iterator Erase(ConstIterator first, const ConstIterator & last);
 
@@ -141,10 +145,17 @@ public:
     template <class... Args>
     Iterator EmplaceFront(Args&&... args);
 
+    Iterator PushBack(const Value & val);
+    Iterator PushBack(Value && val);
+
+    Iterator PushFront(const Value & val);
+    Iterator PushFront(Value && val);
+
 /*
     Iterator Insert(ConstIterator position, const Value & value);
     Iterator Insert(ConstIterator position, size_t n, const Value & value);
 */
+
     template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     Iterator Insert(const ConstIterator & position, InputIterator first, const InputIterator & last);
 
@@ -157,21 +168,16 @@ public:
     void Assign(size_t n, const Value & value);
     void Assign(std::initializer_list<Value> il);
 
-    void PushBack(const Value & val);
-    void PushBack(Value && val);
-
-    void PushFront(const Value & val);
-    void PushFront(Value && val);
+    Value & Back();
+    const Value & Back() const;
+*/
 
     Value & Front();
     const Value & Front() const;
 
-    Value & back();
-    const Value & back() const;
+    Value & Back();
+    const Value & Back() const;
 
-    void PopBack();
-    void PopFront();
-*/
 private:
     Iterator InsertBefore(const NodePtr & node, const NodePtr & nodeToBeInserted);
     template <typename... Args>
@@ -230,6 +236,30 @@ typename CMyList<Value>::Iterator CMyList<Value>::EmplaceFront(Args &&... args)
 }
 
 template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::PushBack(const Value & val)
+{
+    return EmplaceBack(val);
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::PushBack(Value && val)
+{
+    return EmplaceBack(std::move(val));
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::PushFront(const Value & val)
+{
+    return EmplaceFront(val);
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::PushFront(Value && val)
+{
+    return EmplaceFront(std::move(val));
+}
+
+template <typename Value>
 template <typename InputIterator, typename>
 typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & position, InputIterator it, const InputIterator & last)
 {
@@ -256,7 +286,73 @@ typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & p
     return CreateIterator<Iterator>(node->next);
 }
 
+template <typename Value>
+Value & CMyList<Value>::Front()
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Try to access front element on empty list");
+    }
+
+    return *begin();
+}
+
+template <typename Value>
+const Value & CMyList<Value>::Front() const
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Try to access front element on empty list");
+    }
+
+    return *begin();
+}
+
+template <typename Value>
+Value & CMyList<Value>::Back()
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Try to access back element on empty list");
+    }
+
+    return *(--end());
+}
+
+template <typename Value>
+const Value & CMyList<Value>::Back() const
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Try to access back element on empty list");
+    }
+
+    return *(--end());
+}
+
 // ---------------------- Erase ----------------------
+
+template <typename Value>
+void CMyList<Value>::PopBack()
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Pop back on empty list");
+    }
+
+    Erase(--cend());
+}
+
+template <typename Value>
+void CMyList<Value>::PopFront()
+{
+    if (IsEmpty())
+    {
+        throw std::logic_error("Pop front on empty list");
+    }
+
+    Erase(cbegin());
+}
 
 template <typename Value>
 typename CMyList<Value>::Iterator CMyList<Value>::Erase(const ConstIterator & position)

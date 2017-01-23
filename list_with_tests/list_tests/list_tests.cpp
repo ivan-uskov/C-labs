@@ -365,6 +365,82 @@ BOOST_AUTO_TEST_CASE(insert_empty_range_returns_iterator_specified_to_insert_as_
 
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_FIXTURE_TEST_SUITE(push_to_list, ListWithSeveralIntsFixture) // ------------------- push_to_list -------------------
+
+BOOST_AUTO_TEST_CASE(push_back_element_by_lvalue_to_list_creates_copy_of_element_at_back_and_returns_iterator_to_element_before_end)
+{
+    auto listCopy = CMyList<int>(list);
+    CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
+    auto it = listOfLists.PushBack(list);
+    BOOST_CHECK((list == listCopy)); // values not stealed
+    BOOST_CHECK(((*(--listOfLists.end())) == list));
+    BOOST_CHECK((it == --listOfLists.end()));
+}
+
+BOOST_AUTO_TEST_CASE(push_back_element_by_rvalue_to_list_move_element_at_back_and_returns_iterator_to_element_before_end)
+{
+    auto listCopy = CMyList<int>(list);
+    CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
+    auto it = listOfLists.PushBack(move(list));
+    BOOST_CHECK(list.IsEmpty()); // values stealed
+    BOOST_CHECK(((*(--listOfLists.end())) == listCopy));
+    BOOST_CHECK((it == --listOfLists.end()));
+}
+
+BOOST_AUTO_TEST_CASE(push_front_element_by_lvalue_to_list_creates_copy_of_element_at_front_and_returns_iterator_to_begin)
+{
+    auto listCopy = CMyList<int>(list);
+    CMyList<CMyList<int>> listOfLists{ CMyList<int>()};
+    auto it = listOfLists.PushFront(list);
+    BOOST_CHECK((list == listCopy)); // values not stealed
+    BOOST_CHECK(((*listOfLists.begin()) == list));
+    BOOST_CHECK((it == listOfLists.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(push_front_element_by_rvalue_to_list_move_element_at_front_and_returns_iterator_to_begin)
+{
+    auto listCopy = CMyList<int>(list);
+    CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
+    auto it = listOfLists.PushFront(move(list));
+    BOOST_CHECK(list.IsEmpty()); // values stealed
+    BOOST_CHECK(((*listOfLists.begin()) == listCopy));
+    BOOST_CHECK((it == listOfLists.begin()));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(outside_elements_access, ListWithSeveralIntsFixture) // ------------------- outside_elements_access -------------------
+
+BOOST_AUTO_TEST_CASE(front_throws_logic_error_on_empty_list)
+{
+    CMyList<int> l;
+    auto const& constl = l;
+    BOOST_CHECK_THROW(l.Front(), logic_error);
+    BOOST_CHECK_THROW(constl.Front(), logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(front_returns_first_element)
+{
+    BOOST_CHECK_EQUAL(list.Front(), 1);
+    BOOST_CHECK_EQUAL(constList.Front(), 1);
+}
+
+BOOST_AUTO_TEST_CASE(back_throws_logic_error_on_empty_list)
+{
+    CMyList<int> l;
+    auto const& constl = l;
+    BOOST_CHECK_THROW(l.Back(), logic_error);
+    BOOST_CHECK_THROW(constl.Back(), logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(back_returns_last_element)
+{
+    BOOST_CHECK_EQUAL(list.Back(), 4);
+    BOOST_CHECK_EQUAL(constList.Back(), 4);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_FIXTURE_TEST_SUITE(list_iterator, ListWithSeveralIntsFixture) // ------------------- list_iterator -------------------
 
 BOOST_AUTO_TEST_CASE(begin_iterator_refers_to_first_element)
@@ -460,6 +536,30 @@ BOOST_AUTO_TEST_CASE(erase_by_foreign_and_self_iterator_throws_logic_error)
     anotherList.Emplace(anotherList.cend(), 42);
     BOOST_CHECK_THROW(list.Erase(anotherList.cbegin(), list.cend()), logic_error);
     BOOST_CHECK_THROW(list.Erase(list.cbegin(), anotherList.cend()), logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(pop_back_on_empty_list_throws_logic_error)
+{
+    CMyList<int> l;
+    BOOST_CHECK_THROW(l.PopBack(), logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(pop_back_remove_one_element_from_back)
+{
+    list.PopBack();
+    BOOST_CHECK((list == std::list<int>{1, 2, 3}));
+}
+
+BOOST_AUTO_TEST_CASE(pop_front_on_empty_list_throws_logic_error)
+{
+    CMyList<int> l;
+    BOOST_CHECK_THROW(l.PopFront(), logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(pop_front_remove_one_element_from_front)
+{
+    list.PopFront();
+    BOOST_CHECK((list == std::list<int>{2, 3, 4}));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
