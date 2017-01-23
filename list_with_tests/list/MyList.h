@@ -71,7 +71,7 @@ public:
 
         operator MyIterator<const IteratorValue> ();
         IteratorValue & operator * () const;
-        // IteratorValue * operator -> () const;
+        IteratorValue * operator -> () const;
 
         MyIterator & operator ++ ();
         MyIterator operator ++ (int);
@@ -574,6 +574,13 @@ template <typename IteratorValue>
 IteratorValue & CMyList<Value>::MyIterator<IteratorValue>::operator * () const
 {
     return *(m_node->value);
+}
+
+template <typename Value>
+template <typename IteratorValue>
+IteratorValue * CMyList<Value>::MyIterator<IteratorValue>::operator -> () const
+{
+    return m_node->value.get();
 }
 
 template <typename Value>

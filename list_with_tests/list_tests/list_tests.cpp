@@ -6,6 +6,12 @@ using namespace std::placeholders;
 
 namespace
 {
+    struct Point
+    {
+        int x;
+        int y;
+    };
+
     struct EmptyListFixure
     {
         CMyList<int> list;
@@ -584,6 +590,30 @@ BOOST_AUTO_TEST_CASE(old_end_iterator_stay_end_after_emplace_back)
     list.Emplace(list.cend(), 42);
     --it;
     BOOST_CHECK_EQUAL(*it, 42);
+}
+
+BOOST_AUTO_TEST_CASE(begin_not_equals_to_end_in_not_empty_list)
+{
+    BOOST_CHECK((list.begin() != list.end()));
+}
+
+BOOST_AUTO_TEST_CASE(post_decrement_return_copy_of_iterator_without_decrement)
+{
+    BOOST_CHECK(((list.end()--) == list.end()));
+}
+
+BOOST_AUTO_TEST_CASE(post_increment_return_copy_of_iterator_without_increment)
+{
+    BOOST_CHECK(((list.begin()++) == list.begin()));
+}
+
+BOOST_AUTO_TEST_CASE(arrow_operator_return_pointer_to_data)
+{
+    CMyList<Point> points;
+    points.EmplaceBack(Point{ 3, 4 });
+    auto first = points.begin();
+    BOOST_CHECK_EQUAL(first->x, 3);
+    BOOST_CHECK_EQUAL(first->y, 4);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
