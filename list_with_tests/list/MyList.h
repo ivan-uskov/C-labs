@@ -45,10 +45,8 @@ class CMyList
 public:
     CMyList();
 
-/*
     CMyList(size_t n);
     CMyList(size_t n, const Value & value);
-*/
 
     template<typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     CMyList(InputIterator it, InputIterator last);
@@ -123,17 +121,10 @@ public:
 
     void Swap(CMyList & rhs) noexcept;
 
-/*
-    void Resize(size_t n);
-    void Resize(size_t n, const Value & value);
-*/
-
 public:
-/*
     CMyList & operator = (const CMyList & rhs);
     CMyList & operator = (CMyList && rhs);
-    CMyList & operator = (std::initializer_list<Value> && il);
-*/
+    CMyList & operator = (std::initializer_list<Value> il);
 
 public:
     template <typename... Args>
@@ -153,23 +144,22 @@ public:
 
 /*
     Iterator Insert(ConstIterator position, const Value & value);
+    Iterator Insert(ConstIterator position, Value && val);
     Iterator Insert(ConstIterator position, size_t n, const Value & value);
 */
 
     template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
     Iterator Insert(const ConstIterator & position, InputIterator first, const InputIterator & last);
+    Iterator Insert(ConstIterator position, size_t n, const Value & value);
+
+    template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
+    void Assign(InputIterator first, const InputIterator & last);
+    void Assign(size_t n, const Value & value);
+    void Assign(std::initializer_list<Value> il);
 
 /*
     Iterator Insert(ConstIterator position, Value && val);
     Iterator Insert(ConstIterator position, std::initializer_list<Value> list);
-
-    template <typename InputIterator, typename = std::enable_if_t<IsIterator<InputIterator>::value>>
-    void Assign(InputIterator first, InputIterator last);
-    void Assign(size_t n, const Value & value);
-    void Assign(std::initializer_list<Value> il);
-
-    Value & Back();
-    const Value & Back() const;
 */
 
     Value & Front();
@@ -209,6 +199,52 @@ template <typename Value>
 bool operator != (const CMyList<Value> & lhs, const CMyList<Value> & rhs)
 {
     return !(lhs == rhs);
+}
+
+// ---------------------- Assign methods ----------------------
+
+template <typename Value>
+template <typename InputIterator, typename>
+void CMyList<Value>::Assign(InputIterator first, const InputIterator & last)
+{
+    CMyList<Value> tmp;
+    tmp.Insert(tmp.cend(), first, last);
+    Swap(tmp);
+}
+
+template <typename Value>
+void CMyList<Value>::Assign(size_t n, const Value & value)
+{
+    Swap(CMyList<Value>(n, value));
+}
+
+template <typename Value>
+void CMyList<Value>::Assign(std::initializer_list<Value> il)
+{
+    Assign(il.begin(), il.end());
+}
+
+// ---------------------- Assign operators ----------------------
+
+template <typename Value>
+CMyList<Value> & CMyList<Value>::operator = (const CMyList & rhs)
+{
+    Assign(rhs.begin(), rhs.end());
+    return *this;
+}
+
+template <typename Value>
+CMyList<Value> & CMyList<Value>::operator = (CMyList && rhs)
+{
+    Swap(rhs);
+    return *this;
+}
+
+template <typename Value>
+CMyList<Value> & CMyList<Value>::operator = (std::initializer_list<Value> il)
+{
+    Assign(il.begin(), il.end());
+    return *this;
 }
 
 // ---------------------- Insertion ----------------------
@@ -281,6 +317,18 @@ typename CMyList<Value>::Iterator CMyList<Value>::Insert(const ConstIterator & p
             Erase(CreateIterator<ConstIterator>(position.m_node->prev));
         }
         throw;
+    }
+
+    return CreateIterator<Iterator>(node->next);
+}
+
+template <typename Value>
+typename CMyList<Value>::Iterator CMyList<Value>::Insert(ConstIterator position, size_t n, const Value & value)
+{
+    auto node = position.m_node->prev;
+    while (n-- > 0)
+    {
+        Emplace(position, value);
     }
 
     return CreateIterator<Iterator>(node->next);
@@ -421,6 +469,18 @@ template <typename Value>
 CMyList<Value>::CMyList()
 {
     Initialize();
+}
+
+template <typename Value>
+CMyList<Value>::CMyList(size_t n)
+    : CMyList(n, Value())
+{}
+
+template <typename Value>
+CMyList<Value>::CMyList(size_t n, const Value & value)
+    : CMyList()
+{
+    Insert(cend(), n, value);
 }
 
 template <typename Value>

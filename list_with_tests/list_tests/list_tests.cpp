@@ -151,6 +151,19 @@ BOOST_AUTO_TEST_CASE(move_constructor_steals_values)
     BOOST_CHECK((movedList == std::list<int>{1, 2, 3, 4}));
 }
 
+BOOST_AUTO_TEST_CASE(default_fill_constructor_creates_n_values_with_default_value)
+{
+    auto l = CMyList<int>(size_t(5));
+    BOOST_CHECK_EQUAL(l.GetSize(), 5);
+}
+
+BOOST_AUTO_TEST_CASE(fill_constructor_creates_same_values_with_specified_value)
+{
+    auto l = CMyList<int>(size_t(5), 6);
+    BOOST_CHECK_EQUAL(l.GetSize(), 5);
+    BOOST_CHECK((l == std::list<int>{6, 6, 6, 6, 6}));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -363,11 +376,22 @@ BOOST_AUTO_TEST_CASE(insert_empty_range_returns_iterator_specified_to_insert_as_
     BOOST_CHECK((it == list.end()));
 }
 
+BOOST_AUTO_TEST_CASE(insert_n_same_value_returns_iterator_to_first_inserted_element)
+{
+    auto oldLastElt = --list.end();
+    auto it = list.Insert(list.end(), 5, 5);
+    BOOST_CHECK((it == ++oldLastElt));
+
+    CMyList<int> myList;
+    it = myList.Insert(myList.end(), 5, 5);
+    BOOST_CHECK((it == myList.begin()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(push_to_list, ListWithSeveralIntsFixture) // ------------------- push_to_list -------------------
 
-BOOST_AUTO_TEST_CASE(push_back_element_by_lvalue_to_list_creates_copy_of_element_at_back_and_returns_iterator_to_element_before_end)
+BOOST_AUTO_TEST_CASE(push_back_lvalue_copy_element_at_back_and_returns_it_to_element_before_end)
 {
     auto listCopy = CMyList<int>(list);
     CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
@@ -377,7 +401,7 @@ BOOST_AUTO_TEST_CASE(push_back_element_by_lvalue_to_list_creates_copy_of_element
     BOOST_CHECK((it == --listOfLists.end()));
 }
 
-BOOST_AUTO_TEST_CASE(push_back_element_by_rvalue_to_list_move_element_at_back_and_returns_iterator_to_element_before_end)
+BOOST_AUTO_TEST_CASE(push_back_rvalue_move_element_at_back_and_returns_it_to_element_before_end)
 {
     auto listCopy = CMyList<int>(list);
     CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
@@ -387,7 +411,7 @@ BOOST_AUTO_TEST_CASE(push_back_element_by_rvalue_to_list_move_element_at_back_an
     BOOST_CHECK((it == --listOfLists.end()));
 }
 
-BOOST_AUTO_TEST_CASE(push_front_element_by_lvalue_to_list_creates_copy_of_element_at_front_and_returns_iterator_to_begin)
+BOOST_AUTO_TEST_CASE(push_front_lvalue_copy_element_at_front_and_returns_begin_it)
 {
     auto listCopy = CMyList<int>(list);
     CMyList<CMyList<int>> listOfLists{ CMyList<int>()};
@@ -397,7 +421,7 @@ BOOST_AUTO_TEST_CASE(push_front_element_by_lvalue_to_list_creates_copy_of_elemen
     BOOST_CHECK((it == listOfLists.begin()));
 }
 
-BOOST_AUTO_TEST_CASE(push_front_element_by_rvalue_to_list_move_element_at_front_and_returns_iterator_to_begin)
+BOOST_AUTO_TEST_CASE(push_front_rvalue_move_element_at_front_and_returns_begin_it)
 {
     auto listCopy = CMyList<int>(list);
     CMyList<CMyList<int>> listOfLists{ CMyList<int>() };
@@ -405,6 +429,70 @@ BOOST_AUTO_TEST_CASE(push_front_element_by_rvalue_to_list_move_element_at_front_
     BOOST_CHECK(list.IsEmpty()); // values stealed
     BOOST_CHECK(((*listOfLists.begin()) == listCopy));
     BOOST_CHECK((it == listOfLists.begin()));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(assign_methods, ListWithSeveralIntsFixture) // ------------------- assign_methods -------------------
+
+// TODO: add exception safe test
+
+BOOST_AUTO_TEST_CASE(assign_range_modify_list_like_range_copy)
+{
+    CMyList<int> l;
+    l.Assign(list.begin(), list.end());
+    BOOST_CHECK((l == list));
+    BOOST_CHECK((&(l.Front()) != &(list.Front())));
+}
+
+BOOST_AUTO_TEST_CASE(fill_assign_work_like_fill_constructor)
+{
+    CMyList<int> byFill(size_t(4), 3);
+    CMyList<int> byAssign;
+    byAssign.Assign(size_t(4), 3);
+    BOOST_CHECK((byFill == byAssign));
+}
+
+BOOST_AUTO_TEST_CASE(initializer_list_assign_work_like_range_assign)
+{
+    CMyList<int> byRange;
+    byRange.Assign(list.begin(), list.end());
+    CMyList<int> byIl;
+    byIl.Assign({1, 2, 3, 4});
+    BOOST_CHECK((byRange == byIl));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(assign_operators, ListWithSeveralIntsFixture) // ------------------- assign_operators -------------------
+
+//TODO: add exception safe tests
+
+BOOST_AUTO_TEST_CASE(copy_assign_operator_copy_values)
+{
+    CMyList<int> l;
+    l = list;
+    BOOST_CHECK((l == list));
+    BOOST_CHECK((&(l.Front()) != &(list.Front())));
+}
+
+BOOST_AUTO_TEST_CASE(move_assign_operator_steals_values)
+{
+    CMyList<int> l;
+    l = move(list);
+    BOOST_CHECK((l == std::list<int>{1, 2, 3, 4}));
+    BOOST_CHECK(list.IsEmpty());
+}
+
+BOOST_AUTO_TEST_CASE(initializer_list_assign_operator_works_like_initializer_list_assign_method)
+{
+    CMyList<int> toBeAssigned{7, 8};
+    CMyList<int> l{ 1, 2, 3, 4 };
+    l = {7, 8};
+    list.Assign({ 7, 8 });
+    
+    BOOST_CHECK((l == toBeAssigned));
+    BOOST_CHECK((list == toBeAssigned));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
